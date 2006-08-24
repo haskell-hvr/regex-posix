@@ -1,0 +1,48 @@
+-- ****************************************************************
+-- To fix for cabal < 1.1.4 comment out the Extra-Source-Files line
+-- ****************************************************************
+Name:                   regex-posix
+Version:                0.71
+-- Cabal-Version:       >=1.1.4
+License:                BSD3
+License-File:           LICENSE
+Copyright:              Copyright (c) 2006, Christopher Kuklewicz
+Author:                 Christopher Kuklewicz
+Maintainer:             TextRegexLazy@personal.mightyreason.com
+Stability:              Seems to work, passes a few tests
+Homepage:               http://sourceforge.net/projects/lazy-regex
+-- Package-URL:
+Synopsis:               Replaces/Enhances Text.Regex
+Description:            The posix regex backend for regex-base
+Category:               Text
+Tested-With:            GHC
+Build-Depends:          regex-base,base,fps >= 0.7
+-- Data-Files:
+-- Extra-Source-Files:     Text/Regex/Lazy/TestCompat.hs, Text/Regex/Lazy/TestFull.hs, Text/Regex/Impl/TestContext.hs, TestTextRegexLazy.hs, Example.hs, Example2.hs, lazy.html, README, Makefile
+-- Extra-Tmp-Files:
+-- This is the library
+Exposed-Modules:        Text.Regex.PosixRE
+                        Text.Regex.Posix.Wrap
+                        Text.Regex.Posix.String
+                        Text.Regex.Posix.ByteString
+-- Futher fields
+Buildable:              True
+-- Other-Modules:
+-- be backward compatible until 6.4.2 is futher deployed
+-- HS-Source-Dirs:         "."
+HS-Source-Dir:         "."
+-- Extensions:
+GHC-Options:            -Wall -Werror -O2
+-- GHC-Options:            -Wall -Werror
+-- GHC-Options:            -Wall -ddump-minimal-imports
+-- GHC-Prog-Options: 
+-- Hugs-Options:
+-- NHC-Options:
+-- Includes:
+-- Include-Dirs:
+-- C-Sources:
+-- Extra-Libraries:
+-- Extra-Lib-Dirs:
+CC-Options:             -DHAVE_REGEX_H
+-- LD-Options:
+-- Frameworks:
