@@ -38,7 +38,7 @@ GHC-Options:            -Wall -Werror -O2
 -- Hugs-Options:
 -- NHC-Options:
 -- Includes:
--- Include-Dirs:
+Include-Dirs:           include
 -- C-Sources:
 -- Extra-Libraries:
 -- Extra-Lib-Dirs:
