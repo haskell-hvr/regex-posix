@@ -129,7 +129,7 @@ module Text.Regex.Posix.Wrap(
 
 import Control.Monad(mapM)
 import Data.Array(Array,listArray)
-import Data.Bits(Bits((.&.),(.|.)))
+import Data.Bits(Bits(..))
 import Data.Int -- need whatever #regoff_t type will be
 import Foreign(Ptr, FunPtr, nullPtr, mallocForeignPtrBytes,
                addForeignPtrFinalizer, Storable(peekByteOff), allocaArray,
@@ -157,9 +157,55 @@ type CRegex = ()   -- dummy regex_t used below to read out nsub value
 type RegOffset = Int64
 
 -- | CompOption is a bitmapped CInt
+#ifdef __GLASGOW_HASKELL__
 newtype CompOption = CompOption CInt deriving (Eq,Show,Num,Bits)
+#else
+newtype CompOption = CompOption CInt deriving (Eq,Show)
+
+instance Num CompOption where
+	CompOption x + CompOption y = CompOption (x + y)
+	CompOption x - CompOption y = CompOption (x - y)
+	CompOption x * CompOption y = CompOption (x * y)
+	abs (CompOption x) = CompOption (abs x)
+	signum (CompOption x) = CompOption (signum x)
+	fromInteger n = CompOption (fromInteger n)
+
+instance Bits CompOption where
+	CompOption x .&. CompOption y = CompOption (x .&. y)
+	CompOption x .|. CompOption y = CompOption (x .|. y)
+	CompOption x `xor` CompOption y = CompOption (x `xor` y)
+	complement (CompOption x) = CompOption (complement x)
+	shift (CompOption x) n = CompOption (shift x n)
+	rotate (CompOption x) n = CompOption (rotate x n)
+	bitSize (CompOption x) = bitSize x
+	isSigned (CompOption x) = isSigned x
+#endif
+
 -- | ExecOption is a bitmapped CInt
+#ifdef __GLASGOW_HASKELL__
 newtype ExecOption = ExecOption CInt deriving (Eq,Show,Num,Bits)
+#else
+newtype ExecOption = ExecOption CInt deriving (Eq,Show)
+
+instance Num ExecOption where
+	ExecOption x + ExecOption y = ExecOption (x + y)
+	ExecOption x - ExecOption y = ExecOption (x - y)
+	ExecOption x * ExecOption y = ExecOption (x * y)
+	abs (ExecOption x) = ExecOption (abs x)
+	signum (ExecOption x) = ExecOption (signum x)
+	fromInteger n = ExecOption (fromInteger n)
+
+instance Bits ExecOption where
+	ExecOption x .&. ExecOption y = ExecOption (x .&. y)
+	ExecOption x .|. ExecOption y = ExecOption (x .|. y)
+	ExecOption x `xor` ExecOption y = ExecOption (x `xor` y)
+	complement (ExecOption x) = ExecOption (complement x)
+	shift (ExecOption x) n = ExecOption (shift x n)
+	rotate (ExecOption x) n = ExecOption (rotate x n)
+	bitSize (ExecOption x) = bitSize x
+	isSigned (ExecOption x) = isSigned x
+#endif
+
 -- | ReturnCode is an enumerated CInt
 newtype ReturnCode = ReturnCode CInt deriving (Eq,Show)
 
