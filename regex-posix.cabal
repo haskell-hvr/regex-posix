@@ -16,7 +16,7 @@ Synopsis:               Replaces/Enhances Text.Regex
 Description:            The posix regex backend for regex-base
 Category:               Text
 Tested-With:            GHC
-Build-Depends:          regex-base,base,fps >= 0.7
+Build-Depends:          regex-base, base >= 2.0
 -- Data-Files:
 -- Extra-Source-Files:     Text/Regex/Lazy/TestCompat.hs, Text/Regex/Lazy/TestFull.hs, Text/Regex/Impl/TestContext.hs, TestTextRegexLazy.hs, Example.hs, Example2.hs, lazy.html, README, Makefile
 -- Extra-Tmp-Files:
