@@ -3,7 +3,7 @@
 -----------------------------------------------------------------------------
 -- |
 --
--- Module      :  Text.Regex.PosixRE
+-- Module      :  Text.Regex.Posix
 -- Copyright   :  (c) Chris Kuklewicz 2006
 -- License     :  BSD-style (see the file LICENSE)
 -- 
@@ -17,7 +17,7 @@
 --
 -----------------------------------------------------------------------------
 
-The "Text.Regex.PosixRE" module provides a backend for regular
+The "Text.Regex.Posix" module provides a backend for regular
 expressions. If you import this along with other backends, then
 you should do so with qualified imports, perhaps renamed for
 convenience.

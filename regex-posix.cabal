@@ -21,7 +21,7 @@ Build-Depends:          regex-base,base,fps >= 0.7
 -- Extra-Source-Files:     Text/Regex/Lazy/TestCompat.hs, Text/Regex/Lazy/TestFull.hs, Text/Regex/Impl/TestContext.hs, TestTextRegexLazy.hs, Example.hs, Example2.hs, lazy.html, README, Makefile
 -- Extra-Tmp-Files:
 -- This is the library
-Exposed-Modules:        Text.Regex.PosixRE
+Exposed-Modules:        Text.Regex.Posix
                         Text.Regex.Posix.Wrap
                         Text.Regex.Posix.String
                         Text.Regex.Posix.ByteString
