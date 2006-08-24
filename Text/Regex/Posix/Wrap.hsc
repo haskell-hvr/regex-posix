@@ -211,14 +211,14 @@ instance RegexOptions Regex CompOption ExecOption where
   getExecOpts (Regex _ _ e) = e
 
 -- (=~) ::(RegexMaker Regex CompOption ExecOption source,RegexContext Regex source1 target) => source1 -> source -> target
-(=~) x r = let q :: Regex
-               q = makeRegex r
-           in match q x
+(=~) x r = let make :: RegexMaker Regex CompOption ExecOption a => a -> Regex
+               make = makeRegex
+           in match (make r) x
 
 -- (=~~) ::(RegexMaker Regex CompOption ExecOption source,RegexContext Regex source1 target,Monad m) => source1 -> source -> m target
-(=~~) x r = let q :: Regex
-                q = makeRegex r
-            in matchM q x
+(=~~) x r = let make :: RegexMaker Regex CompOption ExecOption a => a -> Regex
+                make = makeRegex
+            in matchM (make r) x
 
 type CRegMatch = () -- dummy regmatch_t used below to read out so and eo values
 
