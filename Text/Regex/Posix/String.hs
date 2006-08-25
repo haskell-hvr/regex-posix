@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -fglasgow-exts -fno-warn-orphans #-}
+{-# OPTIONS_GHC -fglasgow-exts #-}
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  Text.Regex.Posix.String
