@@ -4,7 +4,7 @@
 -- Module      :  Text.Regex.Posix.Wrap
 -- Copyright   :  (c) Chris Kuklewicz 2006 derived from (c) The University of Glasgow 2002
 -- License     :  BSD-style (see the file LICENSE)
--- 
+--
 -- Maintainer  :  libraries@haskell.org, textregexlazy@personal.mightyreason.com
 -- Stability   :  experimental
 -- Portability :  non-portable (regex-base needs MPTC+FD)
@@ -14,46 +14,17 @@
 -- export is a 'Regex' type that is specific to the Posix library
 -- backend.  The flags are documented in "Text.Regex.Posix".  The
 -- 'defaultCompOpt' is @(compExtended .|. compNewline)@.
--- 
+--
 -- The 'Regex', 'CompOption', and 'ExecOption' types and their 'RegexOptions'
 -- instance is declared.  The '=~' and '=~~' convenience functions are
 -- defined.
--- 
+--
 -- The exported symbols are the same whether HAVE_REGEX_H is defined, but
 -- when it is not defined then @getVersion == Nothing@ and all other
 -- exported values will call error or fail.
--- 
+--
 -- This module will fail or error only if allocation fails or a nullPtr
 -- is passed in.
--- 
--- Some return codes from "man 3 regex" have been exported:
--- 
--- * retNoMatch REG_NOMATCH The regexec() function failed to match
--- 
--- * retBadpat REG_BADPAT    invalid regular expression
--- 
--- * retEcollate REG_ECOLLATE  invalid collating element
--- 
--- * retEctype REG_ECTYPE    invalid character class
--- 
--- * retEescape REG_EESCAPE   `\' applied to unescapable character
--- 
--- * retEsubreg REG_ESUBREG   invalid backreference number
--- 
--- * retEbrack REG_EBRACK    brackets `[ ]' not balanced
--- 
--- * retEparen REG_EPAREN    parentheses `( )' not balanced
--- 
--- * retEbrace REG_EBRACE    braces `{ }' not balanced
--- 
--- * retEBadbr REG_BADBR     invalid repetition count(s) in `{ }'
--- 
--- * retErange REG_ERANGE    invalid character range in `[ ]'
--- 
--- * retEspace REG_ESPACE    ran out of memory
--- 
--- * retBadrpt REG_BADRPT    `?', `*', or `+' operand invalid
--- 
 --
 -----------------------------------------------------------------------------
 
@@ -61,13 +32,10 @@ module Text.Regex.Posix.Wrap(
   -- ** High-level API
   Regex,
   RegOffset,
-  CompOption(CompOption),
-  ExecOption(ExecOption),
   (=~),
   (=~~),
 
   -- ** Low-level API
-  ReturnCode(ReturnCode),
   WrapError,
   wrapCompile,
   wrapTest,
@@ -78,19 +46,22 @@ module Text.Regex.Posix.Wrap(
   -- ** Miscellaneous
   unusedRegOffset,
 
-  -- ** CompOption values
+  -- ** Compilation options
+  CompOption(CompOption),
   compBlank,
   compExtended,   -- use extended regex syntax
   compIgnoreCase, -- ignore case when matching
   compNoSub,      -- no substring matching needed
   compNewline,    -- '.' doesn't match newline
 
-  -- ** ExecOption values
+  -- ** Execution options
+  ExecOption(ExecOption),
   execBlank,
   execNotBOL,     -- not at begining of line
   execNotEOL,     -- not at end of line
 
-  -- ** ReturnCode values
+  -- ** Return codes
+  ReturnCode(ReturnCode),
   retBadbr,
   retBadpat,
   retBadrpt,
@@ -156,7 +127,26 @@ type CRegex = ()   -- dummy regex_t used below to read out nsub value
 -- to take only the second character.
 type RegOffset = Int64
 
--- | CompOption is a bitmapped CInt
+-- | A bitmapped 'CInt' containing options for compilation of regular
+-- expressions.  Option values (and their man 3 regcomp names) are
+--
+--  * 'compBlank' which is a completely zero value for all the flags.
+--    This is also the 'blankCompOpt' value.
+--
+--  * 'compExtended' (REG_EXTENDED) which can be set to use extended instead
+--    of basic regular expressions.
+--    This is set in the 'defaultCompOpt' value.
+--
+--  * 'compNewline' (REG_NEWLINE) turns on newline sensitivity: The dot (.)
+--    and inverted set @[^ ]@ never match newline, and ^ and $ anchors do
+--    match after and before newlines.
+--    This is set in the 'defaultCompOpt' value.
+--
+--  * 'compIgnoreCase' (REG_ICASE) which can be set to match ignoring upper
+--    and lower distinctions.
+--
+--  * 'compNoSub' (REG_NOSUB) which turns off all information from matching
+--    except whether a match exists.
 #ifdef __GLASGOW_HASKELL__
 newtype CompOption = CompOption CInt deriving (Eq,Show,Num,Bits)
 #else
@@ -181,7 +171,17 @@ instance Bits CompOption where
 	isSigned (CompOption x) = isSigned x
 #endif
 
--- | ExecOption is a bitmapped CInt
+-- | A bitmapped 'CInt' containing options for execution of compiled
+-- regular expressions.  Option values (and their man 3 regexec names) are
+--
+--  * 'execBlank' which is a complete zero value for all the flags.  This is
+--    the blankExecOpt value.
+--
+--  * 'execNotBOL' (REG_NOTBOL) can be set to prevent ^ from matching at the
+--    start of the input.
+--
+--  * 'execNotEOL' (REG_NOTEOL) can be set to prevent $ from matching at the
+--    end of the input (before the terminating NUL).
 #ifdef __GLASGOW_HASKELL__
 newtype ExecOption = ExecOption CInt deriving (Eq,Show,Num,Bits)
 #else
@@ -206,14 +206,50 @@ instance Bits ExecOption where
 	isSigned (ExecOption x) = isSigned x
 #endif
 
--- | ReturnCode is an enumerated CInt
+-- | ReturnCode is an enumerated 'CInt', corresponding to the error codes
+-- from @man 3 regex@:
+--
+-- * 'retBadbr' (@REG_BADBR@) invalid repetition count(s) in @{ }@
+--
+-- * 'retBadpat' (@REG_BADPAT@) invalid regular expression
+--
+-- * 'retBadrpt' (@REG_BADRPT@) @?@, @*@, or @+@ operand invalid
+--
+-- * 'retEcollate' (@REG_ECOLLATE@) invalid collating element
+--
+-- * 'retEctype' (@REG_ECTYPE@) invalid character class
+--
+-- * 'retEescape' (@REG_EESCAPE@) @\\@ applied to unescapable character
+--
+-- * 'retEsubreg' (@REG_ESUBREG@) invalid backreference number
+--
+-- * 'retEbrack' (@REG_EBRACK@) brackets @[ ]@ not balanced
+--
+-- * 'retEparen' (@REG_EPAREN@) parentheses @( )@ not balanced
+--
+-- * 'retEbrace' (@REG_EBRACE@) braces @{ }@ not balanced
+--
+-- * 'retErange' (@REG_ERANGE@) invalid character range in @[ ]@
+--
+-- * 'retEspace' (@REG_ESPACE@) ran out of memory
+--
+-- * 'retNoMatch' (@REG_NOMATCH@) The regexec() function failed to match
+--
 newtype ReturnCode = ReturnCode CInt deriving (Eq,Show)
 
 -- | A compiled regular expression.
 data Regex = Regex (ForeignPtr CRegex) CompOption ExecOption
 
+-- | A completely zero value for all the flags.
+-- This is also the 'blankCompOpt' value.
 compBlank :: CompOption
+compBlank = CompOption 0
+
+-- | A completely zero value for all the flags.
+-- This is also the 'blankExecOpt' value.
 execBlank :: ExecOption
+execBlank = ExecOption 0
+
 unusedRegOffset :: RegOffset
 unusedRegOffset = (-1)
 
@@ -231,7 +267,7 @@ wrapTest :: Regex -> CString
 
 -- | wrapMatch returns offsets for the begin and end of each capture.
 -- Unused captures have offsets of unusedRegOffset which is (-1)
-wrapMatch :: Regex -> CString 
+wrapMatch :: Regex -> CString
           -> IO (Either WrapError (Maybe [(RegOffset,RegOffset)]))
 
 -- | wrapMatchAll returns the offset and length of each capture.
@@ -240,7 +276,7 @@ wrapMatch :: Regex -> CString
 wrapMatchAll :: Regex -> CString
              -> IO (Either WrapError [MatchArray])
 
-wrapCount :: Regex -> CString 
+wrapCount :: Regex -> CString
           -> IO (Either WrapError Int)
 
 (=~)  :: (RegexMaker Regex CompOption ExecOption source,RegexContext Regex source1 target)
@@ -320,9 +356,6 @@ foreign import ccall unsafe "regex/regex.h regerror"
              -> CString -> CSize -> IO CSize
 #endif
 
-compBlank = CompOption 0
-execBlank = ExecOption 0
-
 retOk :: ReturnCode
 retOk = ReturnCode 0
 
@@ -362,7 +395,7 @@ nullTest :: Ptr a -> String -> IO (Either WrapError b) -> IO (Either WrapError b
 {-# INLINE nullTest #-}
 nullTest ptr msg io = do
   if nullPtr == ptr
-    then return (Left (retOk,"Ptr parameter was nullPtr in Text.Regex.TRE.Wrap."++msg)) 
+    then return (Left (retOk,"Ptr parameter was nullPtr in Text.Regex.TRE.Wrap."++msg))
     else io
 
 {-
@@ -428,9 +461,9 @@ wrapMatch regex@(Regex regex_fptr compileOptions flags) cstr = do
           doMatch regex_ptr cstr nsub p_match flags
 
 -- Very very thin wrapper
--- Requires, but does not check, that nsub>=0 
+-- Requires, but does not check, that nsub>=0
 -- Cannot return (Right (Just []))
-doMatch :: Ptr CRegex -> CString -> CSize -> Ptr CRegMatch -> ExecOption 
+doMatch :: Ptr CRegex -> CString -> CSize -> Ptr CRegMatch -> ExecOption
         -> IO (Either WrapError (Maybe [(RegOffset,RegOffset)]))
 {-# INLINE doMatch #-}
 doMatch regex_ptr cstr nsub p_match flags = do
@@ -477,7 +510,7 @@ wrapMatchAll regex@(Regex regex_fptr compileOptions flags) cstr = do
                 result <- at pos
                 case result of
                   Right Nothing -> return (Right (acc []))
-                  Right (Just parts@(whole:_)) -> let ma = toMA pos parts 
+                  Right (Just parts@(whole:_)) -> let ma = toMA pos parts
                                                   in loop (acc.(ma:)) pos whole
                   Left err -> return (Left err)
                   Right (Just []) -> return (Right (acc [(toMA pos [])])) -- should never happen
@@ -491,7 +524,7 @@ wrapMatchAll regex@(Regex regex_fptr compileOptions flags) cstr = do
   where
     toMA :: Int -> [(RegOffset,RegOffset)] -> Array Int (Int,Int)
     toMA pos [] = listArray (0,0) [(pos,0)] -- wtf?
-    toMA pos parts = listArray (0,pred (length parts)) 
+    toMA pos parts = listArray (0,pred (length parts))
       . map (\(s,e)-> if s>=0 then (pos+fromIntegral s, fromIntegral (e-s)) else (-1,0))
       $ parts
 

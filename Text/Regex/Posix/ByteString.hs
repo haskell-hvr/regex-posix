@@ -29,8 +29,6 @@ module Text.Regex.Posix.ByteString(
   Regex,
   MatchOffset,
   MatchLength,
-  CompOption(CompOption),
-  ExecOption(ExecOption),
   ReturnCode,
   WrapError,
   -- ** Miscellaneous
@@ -39,13 +37,15 @@ module Text.Regex.Posix.ByteString(
   compile,
   execute,
   regexec,
-  -- ** CompOption flags
+  -- ** Compilation options
+  CompOption(CompOption),
   compBlank,
   compExtended,   -- use extended regex syntax
   compIgnoreCase, -- ignore case when matching
   compNoSub,      -- no substring matching needed
   compNewline,    -- '.' doesn't match newline
-  -- ** ExecOption flags
+  -- ** Execution options
+  ExecOption(ExecOption),
   execBlank,
   execNotBOL,      -- not at begining of line
   execNotEOL       -- not at end of line
