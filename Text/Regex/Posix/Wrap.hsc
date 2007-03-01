@@ -76,11 +76,15 @@ module Text.Regex.Posix.Wrap(
   retEspace
   ) where
 
+#ifdef HAVE_REGEX_H
+#define HAVE_REGCOMP 1
+#else
 #ifndef __NHC__
 #include "HsRegexPosixConfig.h"
 #else
 #define HAVE_REGEX_H 1
 #define HAVE_REGCOMP 1
+#endif
 #endif
 
 #include <sys/types.h>

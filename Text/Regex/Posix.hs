@@ -49,13 +49,17 @@
 -- then you may be able to use regex-parsec to improve performance.
 -----------------------------------------------------------------------------
 
-module Text.Regex.Posix(
+module Text.Regex.Posix(getVersion_Text_Regex_Posix
   -- ** Wrap, for '=~' and '=~~', types and constants
-  module Text.Regex.Posix.Wrap
+ ,module Text.Regex.Posix.Wrap
   -- ** String, instances only
  ,module Text.Regex.Posix.String
+  -- ** Seq Char, instances only
+ ,module Text.Regex.Posix.Sequence
   -- ** ByteString, instances only
- ,module Text.Regex.Posix.ByteString) where
+ ,module Text.Regex.Posix.ByteString
+  -- ** Lazy ByteString, instances only
+ ,module Text.Regex.Posix.ByteString.Lazy) where
 
 import Text.Regex.Posix.Wrap(Regex, CompOption(CompOption),
   ExecOption(ExecOption), (=~), (=~~),
@@ -63,4 +67,13 @@ import Text.Regex.Posix.Wrap(Regex, CompOption(CompOption),
   compBlank, compExtended, compIgnoreCase, compNoSub, compNewline,
   execBlank, execNotBOL, execNotEOL)
 import Text.Regex.Posix.String()
+import Text.Regex.Posix.Sequence()
 import Text.Regex.Posix.ByteString()
+import Text.Regex.Posix.ByteString.Lazy()
+import Data.Version(Version(..))
+
+getVersion_Text_Regex_Posix :: Version
+getVersion_Text_Regex_Posix =
+  Version { versionBranch = [0,90]
+          , versionTags = ["unstable"]
+          }

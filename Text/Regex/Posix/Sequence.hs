@@ -1,7 +1,7 @@
 {-# OPTIONS_GHC -fglasgow-exts #-}
 -----------------------------------------------------------------------------
 -- |
--- Module      :  Text.Regex.Posix.String
+-- Module      :  Text.Regex.Posix.Sequence
 -- Copyright   :  (c) Chris Kuklewicz 2006
 -- License     :  BSD-style (see the file LICENSE)
 -- 
@@ -21,7 +21,7 @@
 --
 -----------------------------------------------------------------------------
 
-module Text.Regex.Posix.String(
+module Text.Regex.Posix.Sequence(
   -- ** Types
   Regex,
   MatchOffset,
@@ -41,7 +41,7 @@ module Text.Regex.Posix.String(
   compIgnoreCase, -- ignore case when matching
   compNoSub,      -- no substring matching needed
   compNewline,    -- '.' doesn't match newline
-  -- ** Execution options
+
   ExecOption(ExecOption),
   execBlank,
   execNotBOL,     -- not at begining of line
@@ -49,14 +49,19 @@ module Text.Regex.Posix.String(
   ) where
 
 import Data.Array(listArray, Array)
-import Data.List(map, length, genericDrop, genericTake)
-import Foreign.C.String(withCAString)
+import Data.List(map, length,)
 import System.IO.Unsafe(unsafePerformIO)
-import Text.Regex.Base.RegexLike(RegexContext(..),RegexMaker(..),RegexLike(..),MatchOffset,MatchLength)
+import Text.Regex.Base.RegexLike(RegexContext(..),RegexMaker(..),RegexLike(..),MatchOffset,MatchLength,Extract(..))
 import Text.Regex.Posix.Wrap
 import Text.Regex.Base.Impl(polymatch,polymatchM)
+import Data.Sequence as S hiding (length)
+import qualified Data.Sequence as S (length)
+import Foreign.C.String
+import Foreign.Marshal.Array
+import Foreign.Marshal.Alloc
+import Foreign.Storable
 
-instance RegexContext Regex String String where
+instance RegexContext Regex (Seq Char) (Seq Char) where
   match = polymatch
   matchM = polymatchM
 
@@ -64,38 +69,38 @@ unusedOffset :: Int
 unusedOffset = fromIntegral unusedRegOffset
 
 unwrap :: (Show e) => Either e v -> IO v
-unwrap x = case x of Left err -> fail ("Text.Regex.Posix.String died: "++ show err)
+unwrap x = case x of Left err -> fail ("Text.Regex.Posix.Sequence died: "++ show err)
                      Right v -> return v
 
-instance RegexMaker Regex CompOption ExecOption String where
+instance RegexMaker Regex CompOption ExecOption (Seq Char) where
   makeRegexOpts c e pattern = unsafePerformIO $
     (compile c e pattern >>= unwrap)
   makeRegexOptsM c e pattern = either (fail.show) return $ unsafePerformIO $ 
     (compile c e pattern)
 
-instance RegexLike Regex String where
+instance RegexLike Regex (Seq Char) where
   matchTest regex str = unsafePerformIO $ do
-    withCAString str (wrapTest regex) >>= unwrap
+    withSeq str (wrapTest regex) >>= unwrap
   matchOnce regex str = unsafePerformIO $ 
     execute regex str >>= unwrap
   matchAll regex str = unsafePerformIO $ 
-    withCAString str (wrapMatchAll regex) >>= unwrap
+    withSeq str (wrapMatchAll regex) >>= unwrap
   matchCount regex str = unsafePerformIO $
-    withCAString str (wrapCount regex) >>= unwrap
+    withSeq str (wrapCount regex) >>= unwrap
 
 -- compile
 compile  :: CompOption -- ^ Flags (summed together)
          -> ExecOption -- ^ Flags (summed together)
-         -> String     -- ^ The regular expression to compile (ASCII only, no null bytes)
+         -> (Seq Char)     -- ^ The regular expression to compile (ASCII only, no null bytes)
          -> IO (Either WrapError Regex) -- ^ Returns: the compiled regular expression
-compile flags e pattern =  withCAString pattern (wrapCompile flags e)
+compile flags e pattern =  withSeq pattern (wrapCompile flags e)
 
 -- -----------------------------------------------------------------------------
 -- regexec
 
 -- | Matches a regular expression against a string
 execute :: Regex      -- ^ Compiled regular expression
-        -> String     -- ^ String to match against
+        -> (Seq Char)     -- ^ (Seq Char) to match against
         -> IO (Either WrapError (Maybe (Array Int (MatchOffset,MatchLength))))
                 -- ^ Returns: 'Nothing' if the regex did not match the
                 -- string, or:
@@ -104,7 +109,7 @@ execute :: Regex      -- ^ Compiled regular expression
                 --   'Just' (array of offset length pairs)
                 -- @
 execute regex str = do
-  maybeStartEnd <- withCAString str (wrapMatch regex)
+  maybeStartEnd <- withSeq str (wrapMatch regex)
   case maybeStartEnd of
     Right Nothing -> return (Right Nothing)
 --  Right (Just []) ->  fail "got [] back!" -- return wierd array instead
@@ -119,8 +124,8 @@ execute regex str = do
 
 -- | Matches a regular expression against a string
 regexec :: Regex      -- ^ Compiled regular expression
-        -> String     -- ^ String to match against
-        -> IO (Either WrapError (Maybe (String, String, String, [String])))
+        -> (Seq Char)     -- ^ (Seq Char) to match against
+        -> IO (Either WrapError (Maybe ((Seq Char), (Seq Char), (Seq Char), [(Seq Char)])))
                 -- ^ Returns: 'Nothing' if the regex did not match the
                 -- string, or:
                 --
@@ -131,17 +136,31 @@ regexec :: Regex      -- ^ Compiled regular expression
                 --         subexpression matches)
                 -- @
 regexec regex str = do
-  let getSub (start,stop) | start == unusedRegOffset = ""
+  let getSub :: (RegOffset,RegOffset) -> (Seq Char)
+      getSub (start,stop) | start == unusedRegOffset = S.empty
                           | otherwise = 
-        genericTake (stop-start) . genericDrop start $ str
-      matchedParts [] = (str,"","",[]) -- no information
+        extract (fromEnum start,fromEnum $ stop-start) $ str
+      matchedParts :: [(RegOffset,RegOffset)] -> ((Seq Char), (Seq Char), (Seq Char), [(Seq Char)])
+      matchedParts [] = (str,S.empty,S.empty,[]) -- no information
       matchedParts (matchedStartStop@(start,stop):subStartStop) = 
-        (genericTake start str
+        (before (fromEnum start) str
         ,getSub matchedStartStop
-        ,genericDrop stop str
+        ,after (fromEnum stop) str
         ,map getSub subStartStop)
-  maybeStartEnd <- withCAString str (wrapMatch regex)
+  maybeStartEnd <- withSeq str (wrapMatch regex)
   case maybeStartEnd of
     Right Nothing -> return (Right Nothing)
     Right (Just parts) -> return . Right . Just . matchedParts $ parts
     Left err -> return (Left err)
+
+withSeq :: Seq Char -> (CString -> IO a) -> IO a
+withSeq s f =
+  let -- Ensure null at end of s
+      !s' = case viewr s of
+              EmptyR -> singleton '\0'
+              _ :> '\0' -> s
+              _ -> s |> '\0'
+      pokes !p !a = case viewl a of
+                      EmptyL -> return ()
+                      c :< a' -> poke p (castCharToCChar c) >> pokes (advancePtr p 1) a'
+  in allocaBytes (S.length s') (\ptr -> pokes ptr s' >> f ptr)
