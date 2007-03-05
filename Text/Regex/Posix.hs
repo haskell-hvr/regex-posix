@@ -50,6 +50,7 @@
 -----------------------------------------------------------------------------
 
 module Text.Regex.Posix(getVersion_Text_Regex_Posix
+ ,module Text.Regex.Base
   -- ** Wrap, for '=~' and '=~~', types and constants
  ,module Text.Regex.Posix.Wrap
   -- ** String, instances only
@@ -71,6 +72,7 @@ import Text.Regex.Posix.Sequence()
 import Text.Regex.Posix.ByteString()
 import Text.Regex.Posix.ByteString.Lazy()
 import Data.Version(Version(..))
+import Text.Regex.Base
 
 getVersion_Text_Regex_Posix :: Version
 getVersion_Text_Regex_Posix =
