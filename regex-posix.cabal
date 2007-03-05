@@ -1,5 +1,5 @@
 Name:                   regex-posix
-Version:                0.90
+Version:                0.91
 -- Cabal-Version:       >=1.1.4
 License:                BSD3
 License-File:           LICENSE
@@ -35,11 +35,11 @@ GHC-Options:            -Wall -Werror -O2
 -- GHC-Prof-Options: 
 -- Hugs-Options:
 -- NHC-Options:
--- Includes:
-Include-Dirs:           include
 -- C-Sources:
--- Extra-Libraries:
--- Extra-Lib-Dirs:
-CC-Options:             -DHAVE_REGEX_H
 -- LD-Options:
 -- Frameworks:
+CC-Options:             -DHAVE_REGEX_H
+-- Includes:
+Include-Dirs:           include
+-- Extra-Libraries:
+-- Extra-Lib-Dirs:
