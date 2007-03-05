@@ -53,12 +53,13 @@ module Text.Regex.Posix.ByteString(
 
 import Data.Array(Array,listArray)
 import Data.ByteString(ByteString)
-import qualified Data.ByteString as B(empty,useAsCString,last,take,drop)
+import qualified Data.ByteString as B(empty,useAsCString,last,take,drop,null)
 import qualified Data.ByteString.Base as B(unsafeUseAsCString)
 import System.IO.Unsafe(unsafePerformIO)
 import Text.Regex.Base.RegexLike(RegexMaker(..),RegexContext(..),RegexLike(..),MatchOffset,MatchLength)
 import Text.Regex.Posix.Wrap -- all
 import Text.Regex.Base.Impl(polymatch,polymatchM)
+import Foreign.C.String(CString)
 
 instance RegexContext Regex ByteString ByteString where
   match = polymatch
@@ -76,22 +77,13 @@ instance RegexMaker Regex CompOption ExecOption ByteString where
 
 instance RegexLike Regex ByteString where
   matchTest regex bs = unsafePerformIO $
-    let asCString = if (0==B.last bs)
-                      then B.unsafeUseAsCString
-                      else B.useAsCString
-    in asCString bs (wrapTest regex) >>=  unwrap
+    asCString bs (wrapTest regex) >>=  unwrap
   matchOnce regex bs = unsafePerformIO $ 
     execute regex bs >>= unwrap
   matchAll regex bs = unsafePerformIO $
-    let asCString = if (0==B.last bs)
-                      then B.unsafeUseAsCString
-                      else B.useAsCString
-    in asCString bs (wrapMatchAll regex) >>= unwrap
+    asCString bs (wrapMatchAll regex) >>= unwrap
   matchCount regex bs = unsafePerformIO $
-    let asCString = if (0==B.last bs)
-                      then B.unsafeUseAsCString
-                      else B.useAsCString
-    in asCString bs (wrapCount regex) >>= unwrap
+    asCString bs (wrapCount regex) >>= unwrap
 
 -- ---------------------------------------------------------------------
 -- | Compiles a regular expression
@@ -101,10 +93,7 @@ compile :: CompOption    -- ^ Flags (summed together)
         -> ByteString  -- ^ The regular expression to compile
         -> IO (Either WrapError Regex)      -- ^ Returns: the compiled regular expression
 compile c e pattern =
-  let asCString = if (0==B.last pattern)
-                    then B.unsafeUseAsCString
-                    else B.useAsCString
-  in asCString pattern (wrapCompile c e)
+  asCString pattern (wrapCompile c e)
 
 
 -- ---------------------------------------------------------------------
@@ -119,9 +108,6 @@ execute :: Regex      -- ^ Compiled regular expression
                 -- string, or:
                 --   'Just' an array of (offset,length) pairs where index 0 is whole match, and the rest are the captured subexpressions.
 execute regex bs = do
-  let asCString = if (0==B.last bs)
-                     then B.unsafeUseAsCString
-                     else B.useAsCString
   maybeStartEnd <- asCString bs (wrapMatch regex)
   case maybeStartEnd of
     Right Nothing -> return (Right Nothing)
@@ -135,9 +121,6 @@ regexec :: Regex      -- ^ Compiled regular expression
         -> ByteString -- ^ String to match against
         -> IO (Either WrapError (Maybe (ByteString, ByteString, ByteString, [ByteString])))
 regexec regex bs = do
-  let asCString = if (0==B.last bs)
-                    then B.unsafeUseAsCString
-                    else B.useAsCString
   let getSub (start,stop) | start == unusedRegOffset = B.empty
                           | otherwise = B.take (fi (stop-start)) . B.drop (fi start) $ bs
       matchedParts [] = (B.empty,B.empty,bs,[]) -- no information
@@ -158,3 +141,8 @@ unusedOffset = fromIntegral unusedRegOffset
 
 fi :: (Integral i,Num n) => i->n
 fi = fromIntegral
+
+asCString :: ByteString -> (CString -> IO a) -> IO a
+asCString bs = if (not (B.null bs)) && (0==B.last bs)
+                  then B.unsafeUseAsCString bs
+                  else B.useAsCString bs

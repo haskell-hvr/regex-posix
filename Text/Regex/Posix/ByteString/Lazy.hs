@@ -53,7 +53,7 @@ module Text.Regex.Posix.ByteString.Lazy(
   ) where
 
 import Data.Array(Array)
-import qualified Data.ByteString.Lazy as L (ByteString,toChunks,fromChunks,last,snoc)
+import qualified Data.ByteString.Lazy as L (ByteString,null,toChunks,fromChunks,last,snoc)
 import qualified Data.ByteString as B(ByteString,concat)
 import qualified Data.ByteString.Base as B(unsafeUseAsCString)
 import System.IO.Unsafe(unsafePerformIO)
@@ -79,7 +79,7 @@ unwrap x = case x of Left err -> fail ("Text.Regex.Posix.ByteString.Lazy died: "
 
 {-# INLINE asCString #-}
 asCString :: L.ByteString -> (CString -> IO a) -> IO a
-asCString s = if (0==L.last s)
+asCString s = if (not (L.null s)) && (0==L.last s)
                 then B.unsafeUseAsCString (fromLazy s)
                 else B.unsafeUseAsCString (fromLazy (L.snoc s 0))
 
@@ -117,7 +117,7 @@ execute :: Regex      -- ^ Compiled regular expression
                 -- ^ Returns: 'Nothing' if the regex did not match the
                 -- string, or:
                 --   'Just' an array of (offset,length) pairs where index 0 is whole match, and the rest are the captured subexpressions.
-execute regex bs = if (0==L.last bs)
+execute regex bs = if (not (L.null bs)) && (0==L.last bs)
                      then BS.execute regex (fromLazy bs)
                      else BS.execute regex (fromLazy (L.snoc bs 0))
 
@@ -125,7 +125,7 @@ regexec :: Regex      -- ^ Compiled regular expression
         -> L.ByteString -- ^ String to match against
         -> IO (Either WrapError (Maybe (L.ByteString, L.ByteString, L.ByteString, [L.ByteString])))
 regexec regex bs = do
-  x <- if (0==L.last bs)
+  x <- if (not (L.null bs)) && (0==L.last bs)
          then BS.regexec regex (fromLazy bs)
          else BS.regexec regex (fromLazy (L.snoc bs 0))
   return $ case x of

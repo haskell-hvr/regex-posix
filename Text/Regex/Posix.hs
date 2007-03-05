@@ -76,6 +76,6 @@ import Text.Regex.Base
 
 getVersion_Text_Regex_Posix :: Version
 getVersion_Text_Regex_Posix =
-  Version { versionBranch = [0,91]
+  Version { versionBranch = [0,92]
           , versionTags = ["unstable"]
           }
