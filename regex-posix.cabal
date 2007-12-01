@@ -29,8 +29,8 @@ Buildable:              True
 -- Other-Modules:
 -- HS-Source-Dirs:         "."
 Extensions:             MultiParamTypeClasses, FunctionalDependencies
-GHC-Options:            -Wall -Werror -O2
--- GHC-Options:            -Wall -Werror
+GHC-Options:            -Wall -O2
+-- GHC-Options:            -Wall -Werror -O2
 -- GHC-Options:            -Wall -ddump-minimal-imports
 -- GHC-Prof-Options: 
 -- Hugs-Options:
