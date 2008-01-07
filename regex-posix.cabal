@@ -22,8 +22,11 @@ library
     -- Need the next symbol for using CPP to get Data.ByteString.Base|Unsafe in
     --  ./Text/Regex/Posix/ByteString.hs and  ./Text/Regex/Posix/ByteString/Lazy.hs
     CPP-Options: "-DSPLIT_BASE=1"
+    Extensions:         MultiParamTypeClasses, FunctionalDependencies, CPP, ForeignFunctionInterface, GeneralizedNewtypeDeriving, FlexibleContexts, TypeSynonymInstances, FlexibleInstances
+
   else
     Build-Depends:      regex-base >= 0.93, base < 3.0
+    Extensions:         MultiParamTypeClasses, FunctionalDependencies, CPP
 
   -- Data-Files:
   -- Extra-Source-Files:
@@ -40,7 +43,6 @@ library
   -- Other-Modules:
   -- HS-Source-Dirs:         "."
   -- The CPP is for using -DSPLIT_BASE=1 to get Data.ByteString.Base|Unsafe
-  Extensions:             MultiParamTypeClasses, FunctionalDependencies, CPP
   GHC-Options:            -Wall -O2
   -- GHC-Options:            -Wall -Werror -O2
   -- GHC-Options:            -Wall -ddump-minimal-imports

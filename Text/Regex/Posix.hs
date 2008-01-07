@@ -52,15 +52,7 @@
 module Text.Regex.Posix(getVersion_Text_Regex_Posix
  ,module Text.Regex.Base
   -- ** Wrap, for '=~' and '=~~', types and constants
- ,module Text.Regex.Posix.Wrap
-  -- ** String, instances only
- ,module Text.Regex.Posix.String
-  -- ** Seq Char, instances only
- ,module Text.Regex.Posix.Sequence
-  -- ** ByteString, instances only
- ,module Text.Regex.Posix.ByteString
-  -- ** Lazy ByteString, instances only
- ,module Text.Regex.Posix.ByteString.Lazy) where
+ ,module Text.Regex.Posix.Wrap) where
 
 import Text.Regex.Posix.Wrap(Regex, CompOption(CompOption),
   ExecOption(ExecOption), (=~), (=~~),
