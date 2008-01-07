@@ -1,4 +1,3 @@
-{-# OPTIONS_GHC  -fglasgow-exts -fffi #-}
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  Text.Regex.Posix.Wrap

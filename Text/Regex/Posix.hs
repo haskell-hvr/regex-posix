@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -fno-warn-unused-imports #-}
+{- OPTIONS_GHC -fno-warn-unused-imports -}
 -----------------------------------------------------------------------------
 -- |
 --
@@ -76,6 +76,6 @@ import Text.Regex.Base
 
 getVersion_Text_Regex_Posix :: Version
 getVersion_Text_Regex_Posix =
-  Version { versionBranch = [0,92]
+  Version { versionBranch = [0,93]  -- Keep in sync with regex-posix.cabal
           , versionTags = ["unstable"]
           }

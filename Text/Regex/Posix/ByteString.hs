@@ -1,4 +1,4 @@
-{-# OPTIONS_GHC -fglasgow-exts #-}
+{-# OPTIONS_GHC -fno-warn-orphans #-}
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  Text.Regex.Posix.ByteString
@@ -54,7 +54,11 @@ module Text.Regex.Posix.ByteString(
 import Data.Array(Array,listArray)
 import Data.ByteString(ByteString)
 import qualified Data.ByteString as B(empty,useAsCString,last,take,drop,null)
+#ifdef SPLIT_BASE
+import qualified Data.ByteString.Unsafe as B(unsafeUseAsCString)
+#else
 import qualified Data.ByteString.Base as B(unsafeUseAsCString)
+#endif
 import System.IO.Unsafe(unsafePerformIO)
 import Text.Regex.Base.RegexLike(RegexMaker(..),RegexContext(..),RegexLike(..),MatchOffset,MatchLength)
 import Text.Regex.Posix.Wrap -- all

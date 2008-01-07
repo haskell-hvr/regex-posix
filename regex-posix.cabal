@@ -1,6 +1,7 @@
 Name:                   regex-posix
-Version:                0.92
--- Cabal-Version:       >=1.1.4
+-- Keep the Version below in sync with ./Text/Regex/Posix.hs value getVersion_Text_Regex_Posix :: Version
+Version:                0.93
+Cabal-Version:          >=1.2
 License:                BSD3
 License-File:           LICENSE
 Copyright:              Copyright (c) 2007, Christopher Kuklewicz
@@ -13,33 +14,44 @@ Synopsis:               Replaces/Enhances Text.Regex
 Description:            The posix regex backend for regex-base
 Category:               Text
 Tested-With:            GHC
-Build-Depends:          regex-base >= 0.80, base >= 2.0
--- Data-Files:
--- Extra-Source-Files:
--- Extra-Tmp-Files:
--- This is the library
-Exposed-Modules:        Text.Regex.Posix
-                        Text.Regex.Posix.Wrap
-                        Text.Regex.Posix.String
-                        Text.Regex.Posix.Sequence
-                        Text.Regex.Posix.ByteString
-                        Text.Regex.Posix.ByteString.Lazy
--- Futher fields
-Buildable:              True
--- Other-Modules:
--- HS-Source-Dirs:         "."
-Extensions:             MultiParamTypeClasses, FunctionalDependencies
-GHC-Options:            -Wall -O2
--- GHC-Options:            -Wall -Werror -O2
--- GHC-Options:            -Wall -ddump-minimal-imports
--- GHC-Prof-Options: 
--- Hugs-Options:
--- NHC-Options:
--- C-Sources:
--- LD-Options:
--- Frameworks:
-CC-Options:             -DHAVE_REGEX_H
--- Includes:
-Include-Dirs:           include
--- Extra-Libraries:
--- Extra-Lib-Dirs:
+flag splitBase
+  description: Choose the new smaller, split-up base package.
+library
+  if flag(splitBase)
+    Build-Depends:      regex-base >= 0.93, base >= 3.0, array, containers, bytestring
+    -- Need the next symbol for using CPP to get Data.ByteString.Base|Unsafe in
+    --  ./Text/Regex/Posix/ByteString.hs and  ./Text/Regex/Posix/ByteString/Lazy.hs
+    CPP-Options: "-DSPLIT_BASE=1"
+  else
+    Build-Depends:      regex-base >= 0.93, base < 3.0
+
+  -- Data-Files:
+  -- Extra-Source-Files:
+  -- Extra-Tmp-Files:
+  -- This is the library
+  Exposed-Modules:        Text.Regex.Posix
+                          Text.Regex.Posix.Wrap
+                          Text.Regex.Posix.String
+                          Text.Regex.Posix.Sequence
+                          Text.Regex.Posix.ByteString
+                          Text.Regex.Posix.ByteString.Lazy
+  -- Futher fields
+  Buildable:              True
+  -- Other-Modules:
+  -- HS-Source-Dirs:         "."
+  -- The CPP is for using -DSPLIT_BASE=1 to get Data.ByteString.Base|Unsafe
+  Extensions:             MultiParamTypeClasses, FunctionalDependencies, CPP
+  GHC-Options:            -Wall -O2
+  -- GHC-Options:            -Wall -Werror -O2
+  -- GHC-Options:            -Wall -ddump-minimal-imports
+  -- GHC-Prof-Options: 
+  -- Hugs-Options:
+  -- NHC-Options:
+  -- C-Sources:
+  -- LD-Options:
+  -- Frameworks:
+  CC-Options:             -DHAVE_REGEX_H
+  -- Includes:
+  Include-Dirs:           include
+  -- Extra-Libraries:
+  -- Extra-Lib-Dirs:
