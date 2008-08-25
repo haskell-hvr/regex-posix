@@ -88,6 +88,7 @@ module Text.Regex.Posix.Wrap(
 
 #include <sys/types.h>
 
+#define _POSIX_C_SOURCE 1
 #if HAVE_REGEX_H && HAVE_REGCOMP
 #include "regex.h"
 #else

@@ -1,6 +1,6 @@
 Name:                   regex-posix
 -- Keep the Version below in sync with ./Text/Regex/Posix.hs value getVersion_Text_Regex_Posix :: Version
-Version:                0.93.1
+Version:                0.93.2
 Cabal-Version:          >=1.2
 License:                BSD3
 License-File:           LICENSE
