@@ -37,7 +37,7 @@
 -- does not understand Unicode.  If you need Unicode support you will
 -- have to use a different backend.
 --
--- When offsets are reported for subexpression captures, a subexrepssion
+-- When offsets are reported for subexpression captures, a subexpression
 -- that did not match anything (as opposed to matching an empty string)
 -- will have its offset set to the 'unusedRegOffset' value, which is (-1).
 --

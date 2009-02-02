@@ -1,7 +1,8 @@
 Name:                   regex-posix
 -- Keep the Version below in sync with ./Text/Regex/Posix.hs value getVersion_Text_Regex_Posix :: Version
-Version:                0.93.2
+Version:                0.94.0
 Cabal-Version:          >=1.2
+Build-Type:             Custom
 License:                BSD3
 License-File:           LICENSE
 Copyright:              Copyright (c) 2007, Christopher Kuklewicz
@@ -54,6 +55,6 @@ library
   -- Frameworks:
   CC-Options:             -DHAVE_REGEX_H
   -- Includes:
-  Include-Dirs:           include
+  -- Include-Dirs:           include
   -- Extra-Libraries:
   -- Extra-Lib-Dirs:

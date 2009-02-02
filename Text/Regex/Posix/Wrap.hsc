@@ -1,7 +1,7 @@
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  Text.Regex.Posix.Wrap
--- Copyright   :  (c) Chris Kuklewicz 2006 derived from (c) The University of Glasgow 2002
+-- Copyright   :  (c) Chris Kuklewicz 2006,2007,2008 derived from (c) The University of Glasgow 2002
 -- License     :  BSD-style (see the file LICENSE)
 --
 -- Maintainer  :  libraries@haskell.org, textregexlazy@personal.mightyreason.com
@@ -25,6 +25,18 @@
 -- This module will fail or error only if allocation fails or a nullPtr
 -- is passed in.
 --
+-- 2009-January : wrapMatchAll and wrapCount now adjust the execution
+-- option execNotBOL after the first result to take into account '\n'
+-- in the text immediately before the next matches. (version 0.93.3)
+-- 
+-- 2009-January : wrapMatchAll and wrapCount have been changed to
+-- return all non-overlapping matches, including empty matches even if
+-- they coincide with the end of the previous non-empty match.  The
+-- change is that the first non-empty match no longer terminates the
+-- search.  One can filter the results to obtain the old behavior or
+-- to obtain the behavior of "sed", where "sed" eliminates the empty
+-- matches which coincide with the end of non-empty matches. (version
+-- 0.94.0)
 -----------------------------------------------------------------------------
 
 module Text.Regex.Posix.Wrap(
@@ -102,14 +114,14 @@ module Text.Regex.Posix.Wrap(
 {-# CFILES cbits/regfree.c #-}
 #endif
 
-import Control.Monad(mapM)
+import Control.Monad(mapM,liftM)
 import Data.Array(Array,listArray)
 import Data.Bits(Bits(..))
-import Data.Int -- need whatever #regoff_t type will be
+import Data.Int(Int64) -- need whatever RegeOffset or #regoff_t type will be
 import Foreign(Ptr, FunPtr, nullPtr, mallocForeignPtrBytes,
                addForeignPtrFinalizer, Storable(peekByteOff), allocaArray,
-               allocaBytes, withForeignPtr,ForeignPtr,plusPtr)
-import Foreign.C(CSize,CInt)
+               allocaBytes, withForeignPtr,ForeignPtr,plusPtr,peekElemOff)
+import Foreign.C(CSize,CInt,CChar)
 import Foreign.C.String(peekCAString, CString)
 import Text.Regex.Base.RegexLike(RegexOptions(..),RegexMaker(..),RegexContext(..),MatchArray)
 
@@ -402,6 +414,12 @@ nullTest ptr msg io = do
     then return (Left (retOk,"Ptr parameter was nullPtr in Text.Regex.TRE.Wrap."++msg))
     else io
 
+isNewline,isNull :: Ptr CChar -> Int -> IO Bool
+isNewline cstr pos = liftM (newline ==) (peekElemOff cstr pos)
+  where newline = toEnum 10
+isNull cstr pos = liftM (nullChar ==) (peekElemOff cstr pos)
+  where nullChar = toEnum 0
+
 {-
 wrapRC :: ReturnCode -> IO (Either WrapError b)
 {-# INLINE wrapRC #-}
@@ -505,17 +523,25 @@ wrapMatchAll regex@(Regex regex_fptr compileOptions flags) cstr = do
             nsub_bytes = ((1 + nsub_int) * (#const sizeof(regmatch_t)))
         -- add one because index zero covers the whole match
         allocaBytes nsub_bytes $ \p_match -> do
-         nullTest cstr "wrapMatchAll p_match" $ do
-          let flags' = (execNotBOL .|. flags)
-              at pos = doMatch regex_ptr (plusPtr cstr pos) nsub p_match flags'
-              loop acc old (s,e) | old `seq` s == e = return (Right (acc []))
+         nullTest p_match "wrapMatchAll p_match" $ do
+          let flagsBOL = (complement execNotBOL) .&. flags
+              flagsMIDDLE = execNotBOL .|. flags
+              atBOL pos = doMatch regex_ptr (plusPtr cstr pos) nsub p_match flagsBOL
+              atMIDDLE pos = doMatch regex_ptr (plusPtr cstr pos) nsub p_match flagsMIDDLE
+              loop acc old (s,e) | acc `seq` old `seq` False = undefined
+                                 | s == e = do
+                let pos = old + fromIntegral e -- pos may be 0
+                atEnd <- isNull cstr pos
+                if atEnd then return (Right (acc []))
+                  else loop acc old (s,succ e)
                                  | otherwise = do
-                let pos = old + fromIntegral e
-                result <- at pos
+                let pos = old + fromIntegral e -- pos must be greater than 0 (tricky but true)
+                prev'newline <- isNewline cstr (pred pos) -- safe
+                result <- if prev'newline then atBOL pos else atMIDDLE pos
                 case result of
                   Right Nothing -> return (Right (acc []))
                   Right (Just parts@(whole:_)) -> let ma = toMA pos parts
-                                                  in loop (acc.(ma:)) pos whole
+                                                 in loop (acc.(ma:)) pos whole
                   Left err -> return (Left err)
                   Right (Just []) -> return (Right (acc [(toMA pos [])])) -- should never happen
           result <- doMatch regex_ptr cstr nsub p_match flags
@@ -546,14 +572,21 @@ wrapCount regex@(Regex regex_fptr compileOptions flags) cstr = do
       withForeignPtr regex_fptr $ \regex_ptr -> do
         let nsub_bytes = (#size regmatch_t)
         allocaBytes nsub_bytes $ \p_match -> do
-         nullTest cstr "wrapCount p_match" $ do
-          let flags' = (execNotBOL .|. flags)
-              at pos = doMatch regex_ptr (plusPtr cstr pos) 0 p_match flags'
+         nullTest p_match "wrapCount p_match" $ do
+          let flagsBOL = (complement execNotBOL) .&. flags
+              flagsMIDDLE = execNotBOL .|. flags
+              atBOL pos = doMatch regex_ptr (plusPtr cstr pos) 0 p_match flagsBOL
+              atMIDDLE pos = doMatch regex_ptr (plusPtr cstr pos) 0 p_match flagsMIDDLE
               loop acc old (s,e) | acc `seq` old `seq` False = undefined
-                                 | s == e = return (Right acc)
+                                 | s == e = do
+                let pos = old + fromIntegral e -- 0 <= pos
+                atEnd <- isNull cstr pos
+                if atEnd then return (Right acc)
+                  else loop acc old (s,succ e)
                                  | otherwise = do
-                let pos = old + fromIntegral e
-                result <- at pos
+                let pos = old + fromIntegral e -- 0 < pos
+                prev'newline <- isNewline cstr (pred pos) -- safe
+                result <- if prev'newline then atBOL pos else atMIDDLE pos
                 case result of
                   Right Nothing -> return (Right acc)
                   Right (Just (whole:_)) -> loop (succ acc) pos whole
