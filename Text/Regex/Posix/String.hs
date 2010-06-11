@@ -49,7 +49,7 @@ module Text.Regex.Posix.String(
   ) where
 
 import Data.Array(listArray, Array)
-import Data.List(map, length, genericDrop, genericTake)
+import Data.List(genericDrop, genericTake)
 import Foreign.C.String(withCAString)
 import System.IO.Unsafe(unsafePerformIO)
 import Text.Regex.Base.RegexLike(RegexContext(..),RegexMaker(..),RegexLike(..),MatchOffset,MatchLength)

@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -fno-warn-unused-imports #-}
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  Text.Regex.Posix.Wrap
@@ -43,6 +44,7 @@ module Text.Regex.Posix.Wrap(
   -- ** High-level API
   Regex,
   RegOffset,
+  RegOffsetT,
   (=~),
   (=~~),
 
@@ -114,10 +116,11 @@ module Text.Regex.Posix.Wrap(
 {-# CFILES cbits/regfree.c #-}
 #endif
 
-import Control.Monad(mapM,liftM)
+import Control.Monad(liftM)
 import Data.Array(Array,listArray)
 import Data.Bits(Bits(..))
-import Data.Int(Int64) -- need whatever RegeOffset or #regoff_t type will be
+import Data.Int(Int32,Int64)   -- need whatever RegeOffset or #regoff_t type will be
+import Data.Word(Word32,Word64) -- need whatever RegeOffset or #regoff_t type will be
 import Foreign(Ptr, FunPtr, nullPtr, mallocForeignPtrBytes,
                addForeignPtrFinalizer, Storable(peekByteOff), allocaArray,
                allocaBytes, withForeignPtr,ForeignPtr,plusPtr,peekElemOff)
@@ -142,6 +145,8 @@ type CRegex = ()   -- dummy regex_t used below to read out nsub value
 -- character at index offset 0. So starting at 1 and ending at 2 means
 -- to take only the second character.
 type RegOffset = Int64
+--debugging 64-bit ubuntu
+type RegOffsetT = (#type regoff_t)
 
 -- | A bitmapped 'CInt' containing options for compilation of regular
 -- expressions.  Option values (and their man 3 regcomp names) are
@@ -432,7 +437,7 @@ wrapError errCode regex_ptr = do
   -- Allocate a temporary buffer to hold the error message
   allocaArray (fromIntegral errBufSize) $ \errBuf -> do
    nullTest errBuf "wrapError errBuf" $ do
-    c_regerror errCode regex_ptr errBuf errBufSize
+    _ <- c_regerror errCode regex_ptr errBuf errBufSize
     msg <- peekCAString errBuf :: IO String
     return (Left (errCode, msg))
 

@@ -49,7 +49,6 @@ module Text.Regex.Posix.Sequence(
   ) where
 
 import Data.Array(listArray, Array)
-import Data.List(map, length,)
 import System.IO.Unsafe(unsafePerformIO)
 import Text.Regex.Base.RegexLike(RegexContext(..),RegexMaker(..),RegexLike(..),MatchOffset,MatchLength,Extract(..))
 import Text.Regex.Posix.Wrap
