@@ -29,7 +29,7 @@
 -- 2009-January : wrapMatchAll and wrapCount now adjust the execution
 -- option execNotBOL after the first result to take into account '\n'
 -- in the text immediately before the next matches. (version 0.93.3)
--- 
+--
 -- 2009-January : wrapMatchAll and wrapCount have been changed to
 -- return all non-overlapping matches, including empty matches even if
 -- they coincide with the end of the previous non-empty match.  The
@@ -92,9 +92,7 @@ module Text.Regex.Posix.Wrap(
 #ifdef HAVE_REGEX_H
 #define HAVE_REGCOMP 1
 #else
-#ifndef __NHC__
-#include "HsRegexPosixConfig.h"
-#else
+#ifdef __NHC__
 #define HAVE_REGEX_H 1
 #define HAVE_REGCOMP 1
 #endif
@@ -102,11 +100,14 @@ module Text.Regex.Posix.Wrap(
 
 #include <sys/types.h>
 
+#ifndef _POSIX_C_SOURCE
 #define _POSIX_C_SOURCE 1
+#endif
+
 #if HAVE_REGEX_H && HAVE_REGCOMP
 #include "regex.h"
 #else
-#include "regex/regex.h"
+#include "regex.h"
 
 -- CFILES stuff is Hugs only
 {-# CFILES cbits/reallocf.c #-}
