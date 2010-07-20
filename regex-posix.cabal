@@ -1,7 +1,7 @@
 Name:                   regex-posix
 -- Keep the Version below in sync with ./Text/Regex/Posix.hs value
 -- getVersion_Text_Regex_Posix :: Version
-Version:                0.94.2
+Version:                0.94.3
 Cabal-Version:          >=1.2
 Build-Type:             Custom
 License:                BSD3
@@ -30,11 +30,9 @@ flag splitBase
 
 Library
   if flag(newBase)
-      Build-Depends:      regex-base >= 0.93, base >= 4, array,
-                          containers, bytestring
-      -- Need the next symbol for using CPP to get Data.ByteString.Base|Unsafe
-      -- in ./Text/Regex/Posix/ByteString.hs and
-      -- ./Text/Regex/Posix/ByteString/Lazy.hs
+      Build-Depends: regex-base >= 0.93, base >= 4 && < 5, array, containers, bytestring
+      -- Need the next symbol for using CPP to get Data.ByteString.Base|Unsafe in
+      --  ./Text/Regex/Posix/ByteString.hs and  ./Text/Regex/Posix/ByteString/Lazy.hs
       CPP-Options: "-DSPLIT_BASE=1"
       Extensions:         MultiParamTypeClasses, FunctionalDependencies, CPP,
                           ForeignFunctionInterface, GeneralizedNewtypeDeriving,
