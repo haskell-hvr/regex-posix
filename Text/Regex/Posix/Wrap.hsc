@@ -100,6 +100,9 @@ module Text.Regex.Posix.Wrap(
 
 #include <sys/types.h>
 -- string.h is needed for memset
+
+#include "myfree.h"
+
 #include "string.h"
 
 #ifndef _POSIX_C_SOURCE
@@ -333,8 +336,13 @@ type CRegMatch = () -- dummy regmatch_t used below to read out so and eo values
 -- -----------------------------------------------------------------------------
 -- The POSIX regex C interface
 
-foreign import ccall unsafe "string.h memset"
+-- string.h
+foreign import ccall unsafe "memset"
   c_memset :: Ptr CRegex -> CInt -> CSize -> IO (Ptr CRegex)
+
+-- c-finalizer/myfree.h and c-finalizer/myfree.c
+foreign import ccall unsafe "&myregfree"
+  c_myregfree :: FunPtr (Ptr CRegex -> IO ())
 
 #if __GLASGOW_HASKELL__ || __HUGS__
 
@@ -457,7 +465,7 @@ wrapCompile flags e pattern = do
     Left ioerror -> return (Left (retOk,"Text.Regex.Posix.Wrap.wrapCompile: IOError from mallocBytes(regex_t) : "++show ioerror))
     Right raw_regex_ptr -> do
       zero_regex_ptr <- c_memset raw_regex_ptr 0 (#const sizeof(regex_t)) -- no calloc, so clear the new area to zero
-      regex_fptr <- newForeignPtr c_regfree zero_regex_ptr -- once pointed-to area is clear it should be safe to add finalizer
+      regex_fptr <- newForeignPtr c_myregfree zero_regex_ptr -- once pointed-to area is clear it should be safe to add finalizer
       withForeignPtr regex_fptr $ \regex_ptr -> do  -- withForeignPtr is best hygiene here
         errCode <- c_regcomp regex_ptr pattern flags
         if (errCode == retOk)
