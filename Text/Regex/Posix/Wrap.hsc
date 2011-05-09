@@ -99,6 +99,8 @@ module Text.Regex.Posix.Wrap(
 #endif
 
 #include <sys/types.h>
+-- string.h is needed for memset
+#include "string.h"
 
 #ifndef _POSIX_C_SOURCE
 #define _POSIX_C_SOURCE 1
@@ -122,12 +124,14 @@ import Data.Array(Array,listArray)
 import Data.Bits(Bits(..))
 import Data.Int(Int32,Int64)   -- need whatever RegeOffset or #regoff_t type will be
 import Data.Word(Word32,Word64) -- need whatever RegeOffset or #regoff_t type will be
-import Foreign(Ptr, FunPtr, nullPtr, mallocForeignPtrBytes,
+import Foreign(Ptr, FunPtr, nullPtr, newForeignPtr,
                addForeignPtrFinalizer, Storable(peekByteOff), allocaArray,
                allocaBytes, withForeignPtr,ForeignPtr,plusPtr,peekElemOff)
+import Foreign.Marshal.Alloc(mallocBytes)
 import Foreign.C(CSize,CInt,CChar)
 import Foreign.C.String(peekCAString, CString)
 import Text.Regex.Base.RegexLike(RegexOptions(..),RegexMaker(..),RegexContext(..),MatchArray)
+import qualified System.IO.Error as IOERROR(try)
 
 type CRegex = ()   -- dummy regex_t used below to read out nsub value
 
@@ -329,6 +333,9 @@ type CRegMatch = () -- dummy regmatch_t used below to read out so and eo values
 -- -----------------------------------------------------------------------------
 -- The POSIX regex C interface
 
+foreign import ccall unsafe "string.h memset"
+  c_memset :: Ptr CRegex -> CInt -> CSize -> IO (Ptr CRegex)
+
 #if __GLASGOW_HASKELL__ || __HUGS__
 
 foreign import ccall unsafe "regcomp"
@@ -445,13 +452,14 @@ wrapError errCode regex_ptr = do
 ----------
 wrapCompile flags e pattern = do
  nullTest pattern "wrapCompile pattern" $ do
-  regex_fptr <- mallocForeignPtrBytes (#const sizeof(regex_t))
-  withForeignPtr regex_fptr $ \regex_ptr -> do
-    if nullPtr == regex_ptr
-      then return (Left (retOk,"Text.Regex.Posix.Wrap.wrapCompile could not malloc"))
-      else do
+  e_regex_ptr <- IOERROR.try $ mallocBytes (#const sizeof(regex_t)) -- ioError called if nullPtr
+  case e_regex_ptr of
+    Left ioerror -> return (Left (retOk,"Text.Regex.Posix.Wrap.wrapCompile: IOError from mallocBytes(regex_t) : "++show ioerror))
+    Right raw_regex_ptr -> do
+      zero_regex_ptr <- c_memset raw_regex_ptr 0 (#const sizeof(regex_t)) -- no calloc, so clear the new area to zero
+      regex_fptr <- newForeignPtr c_regfree zero_regex_ptr -- once pointed-to area is clear it should be safe to add finalizer
+      withForeignPtr regex_fptr $ \regex_ptr -> do  -- withForeignPtr is best hygiene here
         errCode <- c_regcomp regex_ptr pattern flags
-        addForeignPtrFinalizer c_regfree regex_fptr
         if (errCode == retOk)
           then return . Right $ Regex regex_fptr flags e
           else wrapError errCode regex_ptr
