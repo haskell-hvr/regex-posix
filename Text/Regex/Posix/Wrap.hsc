@@ -140,7 +140,10 @@ import Foreign.C(CSize,CInt)
 import Foreign.C.String(peekCAString, CString)
 import Text.Regex.Base.RegexLike(RegexOptions(..),RegexMaker(..),RegexContext(..),MatchArray)
 -- deprecated: import qualified System.IO.Error as IOERROR(try)
-import qualified Control.Exception as IOERROR(try)
+import qualified Control.Exception(try,IOException)
+
+try :: IO a -> IO (Either Control.Exception.IOException a)
+try = Control.Exception.try
 
 type CRegex = ()   -- dummy regex_t used below to read out nsub value
 
@@ -355,8 +358,10 @@ foreign import ccall unsafe "&myregfree"
 foreign import ccall unsafe "regcomp"
   c_regcomp :: Ptr CRegex -> CString -> CompOption -> IO ReturnCode
 
+{- NOT USED
 foreign import ccall unsafe "&regfree"
   c_regfree :: FunPtr (Ptr CRegex -> IO ())
+-}
 
 foreign import ccall unsafe "regexec"
   c_regexec :: Ptr CRegex -> CString -> CSize
@@ -466,7 +471,7 @@ wrapError errCode regex_ptr = do
 ----------
 wrapCompile flags e pattern = do
  nullTest pattern "wrapCompile pattern" $ do
-  e_regex_ptr <- IOERROR.try $ mallocBytes (#const sizeof(regex_t)) -- ioError called if nullPtr
+  e_regex_ptr <- try $ mallocBytes (#const sizeof(regex_t)) -- ioError called if nullPtr
   case e_regex_ptr of
     Left ioerror -> return (Left (retOk,"Text.Regex.Posix.Wrap.wrapCompile: IOError from mallocBytes(regex_t) : "++show ioerror))
     Right raw_regex_ptr -> do
