@@ -102,7 +102,7 @@ module Text.Regex.Posix.Wrap(
 -- string.h is needed for memset
 
 #include "myfree.h"
-
+         
 #include "string.h"
 
 #ifndef _POSIX_C_SOURCE
@@ -131,10 +131,16 @@ import Foreign(Ptr, FunPtr, nullPtr, newForeignPtr,
                addForeignPtrFinalizer, Storable(peekByteOff), allocaArray,
                allocaBytes, withForeignPtr,ForeignPtr,plusPtr,peekElemOff)
 import Foreign.Marshal.Alloc(mallocBytes)
-import Foreign.C(CSize,CInt,CChar)
+import Foreign.C(CChar)
+#if __GLASGOW_HASKELL__ >= 703
+import Foreign.C(CSize(CSize),CInt(CInt))
+#else
+import Foreign.C(CSize,CInt)
+#endif
 import Foreign.C.String(peekCAString, CString)
 import Text.Regex.Base.RegexLike(RegexOptions(..),RegexMaker(..),RegexContext(..),MatchArray)
-import qualified System.IO.Error as IOERROR(try)
+-- deprecated: import qualified System.IO.Error as IOERROR(try)
+import qualified Control.Exception as IOERROR(try)
 
 type CRegex = ()   -- dummy regex_t used below to read out nsub value
 
