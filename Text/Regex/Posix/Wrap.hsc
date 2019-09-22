@@ -5,7 +5,7 @@
 -- Copyright   :  (c) Chris Kuklewicz 2006,2007,2008 derived from (c) The University of Glasgow 2002
 -- License     :  BSD-style (see the file LICENSE)
 --
--- Maintainer  :  libraries@haskell.org, textregexlazy@personal.mightyreason.com
+-- Maintainer  :  hvr@gnu.org
 -- Stability   :  experimental
 -- Portability :  non-portable (regex-base needs MPTC+FD)
 --

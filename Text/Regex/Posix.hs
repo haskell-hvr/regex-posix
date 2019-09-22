@@ -6,7 +6,7 @@
 -- Copyright   :  (c) Chris Kuklewicz 2006
 -- License     :  BSD-style (see the file LICENSE)
 -- 
--- Maintainer  :  libraries@haskell.org, textregexlazy@personal.mightyreason.com
+-- Maintainer  :  hvr@gnu.org
 -- Stability   :  experimental
 -- Portability :  non-portable (regex-base needs MPTC+FD)
 --
@@ -65,9 +65,10 @@ import Text.Regex.Posix.ByteString()
 import Text.Regex.Posix.ByteString.Lazy()
 import Data.Version(Version(..))
 import Text.Regex.Base
+import qualified Paths_regex_posix
 
 getVersion_Text_Regex_Posix :: Version
 getVersion_Text_Regex_Posix =
-  Version { versionBranch = [0,94,4]  -- Keep in sync with regex-posix.cabal
+  Version { versionBranch = versionBranch Paths_regex_posix.version
           , versionTags = ["unstable"]
           }
