@@ -1,4 +1,3 @@
-{- OPTIONS_GHC -fno-warn-unused-imports -}
 -----------------------------------------------------------------------------
 -- |
 --
@@ -54,6 +53,9 @@ module Text.Regex.Posix(getVersion_Text_Regex_Posix
   -- ** Wrap, for '=~' and '=~~', types and constants
  ,module Text.Regex.Posix.Wrap) where
 
+import Prelude hiding (fail)
+import Control.Monad.Fail (MonadFail)
+
 import Text.Regex.Posix.Wrap(Regex, CompOption(CompOption),
   ExecOption(ExecOption), (=~), (=~~),
   unusedRegOffset,
@@ -68,7 +70,4 @@ import Text.Regex.Base
 import qualified Paths_regex_posix
 
 getVersion_Text_Regex_Posix :: Version
-getVersion_Text_Regex_Posix =
-  Version { versionBranch = versionBranch Paths_regex_posix.version
-          , versionTags = ["unstable"]
-          }
+getVersion_Text_Regex_Posix = Paths_regex_posix.version

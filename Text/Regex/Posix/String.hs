@@ -48,6 +48,9 @@ module Text.Regex.Posix.String(
   execNotEOL     -- not at end of line
   ) where
 
+import Prelude hiding (fail)
+import Control.Monad.Fail (MonadFail(fail))
+
 import Data.Array(listArray, Array)
 import Data.List(genericDrop, genericTake)
 import Foreign.C.String(withCAString)

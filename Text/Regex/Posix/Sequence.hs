@@ -48,6 +48,9 @@ module Text.Regex.Posix.Sequence(
   execNotEOL     -- not at end of line
   ) where
 
+import Prelude hiding (fail)
+import Control.Monad.Fail (MonadFail(fail))
+
 import Data.Array(listArray, Array)
 import System.IO.Unsafe(unsafePerformIO)
 import Text.Regex.Base.RegexLike(RegexContext(..),RegexMaker(..),RegexLike(..),MatchOffset,MatchLength,Extract(..))

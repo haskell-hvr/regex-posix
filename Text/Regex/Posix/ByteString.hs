@@ -51,6 +51,9 @@ module Text.Regex.Posix.ByteString(
   execNotEOL       -- not at end of line
   ) where
 
+import Prelude hiding (fail)
+import Control.Monad.Fail (MonadFail(fail))
+
 import Data.Array(Array,listArray)
 import Data.ByteString(ByteString)
 import qualified Data.ByteString as B(empty,useAsCString,last,take,drop,null)

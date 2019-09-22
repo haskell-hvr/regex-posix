@@ -52,6 +52,9 @@ module Text.Regex.Posix.ByteString.Lazy(
   execNotEOL       -- not at end of line
   ) where
 
+import Prelude hiding (fail)
+import Control.Monad.Fail (MonadFail(fail))
+
 import Data.Array(Array)
 import qualified Data.ByteString.Lazy as L (ByteString,null,toChunks,fromChunks,last,snoc)
 import qualified Data.ByteString as B(ByteString,concat)

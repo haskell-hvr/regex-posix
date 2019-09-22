@@ -1,4 +1,3 @@
-{-# OPTIONS_GHC -fno-warn-unused-imports #-}
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  Text.Regex.Posix.Wrap
@@ -121,6 +120,9 @@ module Text.Regex.Posix.Wrap(
 {-# CFILES cbits/regexec.c #-}
 {-# CFILES cbits/regfree.c #-}
 #endif
+
+import Prelude hiding (fail)
+import Control.Monad.Fail (MonadFail)
 
 import Control.Monad(liftM)
 import Data.Array(Array,listArray)
@@ -319,7 +321,7 @@ wrapCount :: Regex -> CString
 
 (=~)  :: (RegexMaker Regex CompOption ExecOption source,RegexContext Regex source1 target)
       => source1 -> source -> target
-(=~~) :: (RegexMaker Regex CompOption ExecOption source,RegexContext Regex source1 target,Monad m)
+(=~~) :: (RegexMaker Regex CompOption ExecOption source,RegexContext Regex source1 target,MonadFail m)
       => source1 -> source -> m target
 
 instance RegexOptions Regex CompOption ExecOption where
@@ -335,7 +337,7 @@ instance RegexOptions Regex CompOption ExecOption where
                make = makeRegex
            in match (make r) x
 
--- (=~~) ::(RegexMaker Regex CompOption ExecOption source,RegexContext Regex source1 target,Monad m) => source1 -> source -> m target
+-- (=~~) ::(RegexMaker Regex CompOption ExecOption source,RegexContext Regex source1 target,MonadFail m) => source1 -> source -> m target
 (=~~) x r = let make :: RegexMaker Regex CompOption ExecOption a => a -> Regex
                 make = makeRegex
             in matchM (make r) x
