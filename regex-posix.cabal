@@ -52,16 +52,10 @@ library
                     cbits/regfree.c
     include-dirs:   cbits
 
-  -- Need the next symbol for using CPP to get Data.ByteString.Base|Unsafe in
-  --  ./Text/Regex/Posix/ByteString.hs and  ./Text/Regex/Posix/ByteString/Lazy.hs
-
-  cpp-options: "-DSPLIT_BASE=1"
-
   default-language: Haskell2010
   default-extensions:
       MultiParamTypeClasses
       FunctionalDependencies
-      CPP
       ForeignFunctionInterface
       GeneralizedNewtypeDeriving
       FlexibleContexts
