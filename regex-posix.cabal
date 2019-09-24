@@ -16,12 +16,13 @@ description:
 
 extra-source-files:
   ChangeLog.md
-  cbits/engine.c
-  cbits/cclass.h
-  cbits/cname.h
-  cbits/regex2.h
+  cbits/re_comp.h
+  cbits/recomp.c
+  cbits/regex_internal.c
+  cbits/regex_internal.h
   cbits/regex.h
-  cbits/utils.h
+  cbits/regex.c
+  cbits/regexec.c
   c-finalizer/myfree.h
   c-finalizer/myfree.c
 
@@ -46,11 +47,11 @@ library
   if !os(windows)
     cc-options:     -DHAVE_REGEX_H
   else
-    c-sources:      cbits/reallocf.c
+    c-sources:      cbits/regex_internal.c
                     cbits/regcomp.c
-                    cbits/regerror.c
+                    cbits/regex.c
                     cbits/regexec.c
-                    cbits/regfree.c
+    cc-options: -O3 -DREGEX_STATIC
     include-dirs:   cbits
 
   default-language: Haskell2010
