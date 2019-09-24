@@ -18,9 +18,6 @@
    Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
    02111-1307 USA.  */
 
-#include <regex.h>
-#include "regex_internal.h"
-
 static void re_string_construct_common (const char *str, int len,
 					re_string_t *pstr,
 					RE_TRANSLATE_TYPE trans, int icase,
@@ -38,7 +35,7 @@ static re_dfastate_t *create_cd_newstate (const re_dfa_t *dfa,
 /* This function allocate the buffers.  It is necessary to call
    re_string_reconstruct before using the object.  */
 
-reg_errcode_t
+static reg_errcode_t
 internal_function
 re_string_allocate (re_string_t *pstr, const char *str, int len, int init_len,
 		    RE_TRANSLATE_TYPE trans, int icase, const re_dfa_t *dfa)
@@ -66,7 +63,7 @@ re_string_allocate (re_string_t *pstr, const char *str, int len, int init_len,
 
 /* This function allocate the buffers, and initialize them.  */
 
-reg_errcode_t
+static reg_errcode_t
 internal_function
 re_string_construct (re_string_t *pstr, const char *str, int len,
 		     RE_TRANSLATE_TYPE trans, int icase, const re_dfa_t *dfa)
@@ -129,7 +126,7 @@ re_string_construct (re_string_t *pstr, const char *str, int len,
 
 /* Helper functions for re_string_allocate, and re_string_construct.  */
 
-reg_errcode_t
+static reg_errcode_t
 internal_function
 re_string_realloc_buffers (re_string_t *pstr, int new_buf_len)
 {
@@ -517,7 +514,7 @@ re_string_skip_chars (re_string_t *pstr, int new_raw_idx, wint_t *last_wc)
 /* Build the buffer PSTR->MBS, and apply the translation if we need.
    This function is used in case of REG_ICASE.  */
 
-void
+static void
 internal_function
 build_upper_buffer (re_string_t *pstr)
 {
@@ -540,7 +537,7 @@ build_upper_buffer (re_string_t *pstr)
 
 /* Apply TRANS to the buffer in PSTR.  */
 
-void
+static void
 internal_function
 re_string_translate_buffer (re_string_t *pstr)
 {
@@ -561,7 +558,7 @@ re_string_translate_buffer (re_string_t *pstr)
    Concretely, convert to wide character in case of pstr->mb_cur_max > 1,
    convert to upper case in case of REG_ICASE, apply translation.  */
 
-reg_errcode_t
+static reg_errcode_t
 internal_function
 re_string_reconstruct (re_string_t *pstr, int idx, int eflags)
 {
@@ -821,7 +818,7 @@ re_string_reconstruct (re_string_t *pstr, int idx, int eflags)
   return REG_NOERROR;
 }
 
-unsigned char
+static unsigned char
 internal_function __attribute ((pure))
 re_string_peek_byte_case (const re_string_t *pstr, int idx)
 {
@@ -857,7 +854,7 @@ re_string_peek_byte_case (const re_string_t *pstr, int idx)
   return ch;
 }
 
-unsigned char
+static unsigned char
 internal_function __attribute ((pure))
 re_string_fetch_byte_case (re_string_t *pstr)
 {
@@ -894,7 +891,7 @@ re_string_fetch_byte_case (re_string_t *pstr)
   return pstr->raw_mbs[pstr->raw_mbs_idx + pstr->cur_idx++];
 }
 
-void
+static void
 internal_function
 re_string_destruct (re_string_t *pstr)
 {
@@ -908,7 +905,7 @@ re_string_destruct (re_string_t *pstr)
 
 /* Return the context at IDX in INPUT.  */
 
-unsigned int
+static unsigned int
 internal_function
 re_string_context_at (const re_string_t *input, int idx, int eflags)
 {
@@ -953,7 +950,7 @@ re_string_context_at (const re_string_t *input, int idx, int eflags)
 
 /* Functions for set operation.  */
 
-reg_errcode_t
+static reg_errcode_t
 internal_function
 re_node_set_alloc (re_node_set *set, int size)
 {
@@ -965,7 +962,7 @@ re_node_set_alloc (re_node_set *set, int size)
   return REG_NOERROR;
 }
 
-reg_errcode_t
+static reg_errcode_t
 internal_function
 re_node_set_init_1 (re_node_set *set, int elem)
 {
@@ -981,7 +978,7 @@ re_node_set_init_1 (re_node_set *set, int elem)
   return REG_NOERROR;
 }
 
-reg_errcode_t
+static reg_errcode_t
 internal_function
 re_node_set_init_2 (re_node_set *set, int elem1, int elem2)
 {
@@ -1011,7 +1008,7 @@ re_node_set_init_2 (re_node_set *set, int elem1, int elem2)
   return REG_NOERROR;
 }
 
-reg_errcode_t
+static reg_errcode_t
 internal_function
 re_node_set_init_copy (re_node_set *dest, const re_node_set *src)
 {
@@ -1036,7 +1033,7 @@ re_node_set_init_copy (re_node_set *dest, const re_node_set *src)
    DEST. Return value indicate the error code or REG_NOERROR if succeeded.
    Note: We assume dest->elems is NULL, when dest->alloc is 0.  */
 
-reg_errcode_t
+static reg_errcode_t
 internal_function
 re_node_set_add_intersect (re_node_set *dest, const re_node_set *src1,
 			   const re_node_set *src2)
@@ -1127,7 +1124,7 @@ re_node_set_add_intersect (re_node_set *dest, const re_node_set *src1,
 /* Calculate the union set of the sets SRC1 and SRC2. And store it to
    DEST. Return value indicate the error code or REG_NOERROR if succeeded.  */
 
-reg_errcode_t
+static reg_errcode_t
 internal_function
 re_node_set_init_union (re_node_set *dest, const re_node_set *src1,
 			const re_node_set *src2)
@@ -1180,7 +1177,7 @@ re_node_set_init_union (re_node_set *dest, const re_node_set *src1,
 /* Calculate the union set of the sets DEST and SRC. And store it to
    DEST. Return value indicate the error code or REG_NOERROR if succeeded.  */
 
-reg_errcode_t
+static reg_errcode_t
 internal_function
 re_node_set_merge (re_node_set *dest, const re_node_set *src)
 {
@@ -1263,7 +1260,7 @@ re_node_set_merge (re_node_set *dest, const re_node_set *src)
    SET should not already have ELEM.
    return -1 if an error is occured, return 1 otherwise.  */
 
-int
+static int
 internal_function
 re_node_set_insert (re_node_set *set, int elem)
 {
@@ -1320,7 +1317,7 @@ re_node_set_insert (re_node_set *set, int elem)
    SET should not already have any element greater than or equal to ELEM.
    Return -1 if an error is occured, return 1 otherwise.  */
 
-int
+static int
 internal_function
 re_node_set_insert_last (re_node_set *set, int elem)
 {
@@ -1358,7 +1355,7 @@ re_node_set_compare (const re_node_set *set1, const re_node_set *set2)
 
 /* Return (idx + 1) if SET contains the element ELEM, return 0 otherwise.  */
 
-int
+static int
 internal_function __attribute ((pure))
 re_node_set_contains (const re_node_set *set, int elem)
 {
@@ -1380,7 +1377,7 @@ re_node_set_contains (const re_node_set *set, int elem)
   return set->elems[idx] == elem ? idx + 1 : 0;
 }
 
-void
+static void
 internal_function
 re_node_set_remove_at (re_node_set *set, int idx)
 {
@@ -1395,7 +1392,7 @@ re_node_set_remove_at (re_node_set *set, int idx)
 /* Add the token TOKEN to dfa->nodes, and return the index of the token.
    Or return -1, if an error will be occured.  */
 
-int
+static int
 internal_function
 re_dfa_add_node (re_dfa_t *dfa, re_token_t token)
 {
@@ -1460,7 +1457,7 @@ calc_state_hash (const re_node_set *nodes, unsigned int context)
 	 - We never return non-NULL value in case of any errors, it is for
 	   optimization.  */
 
-re_dfastate_t *
+static re_dfastate_t *
 internal_function
 re_acquire_state (reg_errcode_t *err, const re_dfa_t *dfa,
 		  const re_node_set *nodes)
@@ -1504,7 +1501,7 @@ re_acquire_state (reg_errcode_t *err, const re_dfa_t *dfa,
 	 - We never return non-NULL value in case of any errors, it is for
 	   optimization.  */
 
-re_dfastate_t *
+static re_dfastate_t *
 internal_function
 re_acquire_state_context (reg_errcode_t *err, const re_dfa_t *dfa,
 			  const re_node_set *nodes, unsigned int context)
@@ -1575,7 +1572,7 @@ register_state (const re_dfa_t *dfa, re_dfastate_t *newstate,
   return REG_NOERROR;
 }
 
-void
+static void
 free_state (re_dfastate_t *state)
 {
   re_node_set_free (&state->non_eps_nodes);

@@ -47,11 +47,8 @@ library
   if !os(windows)
     cc-options:     -DHAVE_REGEX_H
   else
-    c-sources:      cbits/regex_internal.c
-                    cbits/regcomp.c
-                    cbits/regex.c
-                    cbits/regexec.c
-    cc-options: -O3 -DREGEX_STATIC
+    c-sources: cbits/regex.c
+    cc-options: -O3 -DUSE_REGEX_STATIC
     include-dirs:   cbits
 
   default-language: Haskell2010

@@ -376,7 +376,6 @@ typedef struct re_string_t re_string_t;
 
 struct re_dfa_t;
 typedef struct re_dfa_t re_dfa_t;
-typedef struct re_dfastate_t re_dfastate_t;
 
 #ifndef _LIBC
 # ifdef __i386__
@@ -387,90 +386,18 @@ typedef struct re_dfastate_t re_dfastate_t;
 #endif
 
 #ifndef NOT_IN_libc
-reg_errcode_t
-internal_function
-re_string_construct (re_string_t *pstr, const char *str, int len,
-		     RE_TRANSLATE_TYPE trans, int icase, const re_dfa_t *dfa);
-reg_errcode_t
-internal_function
-re_string_allocate (re_string_t *pstr, const char *str, int len, int init_len,
-		    RE_TRANSLATE_TYPE trans, int icase, const re_dfa_t *dfa);
-reg_errcode_t
-internal_function
-re_string_reconstruct (re_string_t *pstr, int idx, int eflags);
-re_dfastate_t *
-internal_function
-re_acquire_state_context (reg_errcode_t *err, const re_dfa_t *dfa,
-			  const re_node_set *nodes, unsigned int context);
-int
-internal_function __attribute ((pure))
-re_node_set_contains (const re_node_set *set, int elem);
-reg_errcode_t
-internal_function
-re_node_set_init_copy (re_node_set *dest, const re_node_set *src);
-int
-internal_function
-re_node_set_insert (re_node_set *set, int elem);
-reg_errcode_t
-internal_function
-re_node_set_init_1 (re_node_set *set, int elem);
-reg_errcode_t
-internal_function
-re_node_set_init_2 (re_node_set *set, int elem1, int elem2);
-reg_errcode_t
-internal_function
-re_node_set_init_union (re_node_set *dest, const re_node_set *src1,
-			const re_node_set *src2);
-re_dfastate_t *
-internal_function
-re_acquire_state (reg_errcode_t *err, const re_dfa_t *dfa,
-		  const re_node_set *nodes);
-void
-internal_function
-re_string_destruct (re_string_t *pstr);
-void
-free_state (re_dfastate_t *state);
-reg_errcode_t
-internal_function
-re_node_set_merge (re_node_set *dest, const re_node_set *src);
-int
-internal_function
-re_dfa_add_node (re_dfa_t *dfa, re_token_t token);
-int
-internal_function
-re_node_set_insert_last (re_node_set *set, int elem);
-unsigned char
-internal_function __attribute ((pure))
-re_string_fetch_byte_case (re_string_t *pstr);
-reg_errcode_t
-internal_function
-re_node_set_alloc (re_node_set *set, int size);
-reg_errcode_t
-internal_function
-re_node_set_add_intersect (re_node_set *dest, const re_node_set *src1,
-			   const re_node_set *src2);
-void
-internal_function
-build_upper_buffer (re_string_t *pstr);
-reg_errcode_t
-internal_function
-re_string_realloc_buffers (re_string_t *pstr, int new_buf_len);
-unsigned char
-internal_function __attribute ((pure))
-re_string_peek_byte_case (const re_string_t *pstr, int idx);
-void
-internal_function
-re_string_translate_buffer (re_string_t *pstr);
-unsigned int
-internal_function
-re_string_context_at (const re_string_t *input, int idx, int eflags);
-void
-internal_function
-re_node_set_remove_at (re_node_set *set, int idx);
+static reg_errcode_t re_string_realloc_buffers (re_string_t *pstr,
+						int new_buf_len)
+     internal_function;
 # ifdef RE_ENABLE_I18N
 static void build_wcs_buffer (re_string_t *pstr) internal_function;
 static int build_wcs_upper_buffer (re_string_t *pstr) internal_function;
 # endif /* RE_ENABLE_I18N */
+static void build_upper_buffer (re_string_t *pstr) internal_function;
+static void re_string_translate_buffer (re_string_t *pstr) internal_function;
+static unsigned int re_string_context_at (const re_string_t *input, int idx,
+					  int eflags)
+     internal_function __attribute ((pure));
 #endif
 #define re_string_peek_byte(pstr, offset) \
   ((pstr)->mbs[(pstr)->cur_idx + offset])
@@ -582,6 +509,7 @@ struct re_dfastate_t
   unsigned int has_backref : 1;
   unsigned int has_constraint : 1;
 };
+typedef struct re_dfastate_t re_dfastate_t;
 
 struct re_state_table_entry
 {
