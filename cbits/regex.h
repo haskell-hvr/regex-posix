@@ -30,22 +30,22 @@
 #else
 # define __DLL_IMPORT__	__attribute__((dllimport)) extern
 # define __DLL_EXPORT__	__attribute__((dllexport)) extern
-#endif 
+#endif
 
 #if (defined __WIN32__) || (defined _WIN32)
 # ifdef BUILD_REGEX_DLL
 #  define REGEX_DLL_IMPEXP	__DLL_EXPORT__
 # elif defined(REGEX_STATIC)
-#  define REGEX_DLL_IMPEXP	 
+#  define REGEX_DLL_IMPEXP
 # elif defined (USE_REGEX_DLL)
 #  define REGEX_DLL_IMPEXP	__DLL_IMPORT__
 # elif defined (USE_REGEX_STATIC)
-#  define REGEX_DLL_IMPEXP 	 
+#  define REGEX_DLL_IMPEXP extern
 # else /* assume USE_REGEX_DLL */
 #  define REGEX_DLL_IMPEXP	__DLL_IMPORT__
 # endif
 #else /* __WIN32__ */
-# define REGEX_DLL_IMPEXP	 
+# define REGEX_DLL_IMPEXP
 #endif
 
 /* Allow the use in C++ code.  */
