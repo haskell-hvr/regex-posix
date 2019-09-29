@@ -16,8 +16,7 @@ description:
 
 extra-source-files:
   ChangeLog.md
-  c-finalizer/myfree.h
-  c-finalizer/myfree.c
+  cbits/myfree.h
 
 source-repository head
   type:     git
@@ -41,8 +40,8 @@ library
   other-modules:
       Paths_regex_posix
 
-  c-sources:        c-finalizer/myfree.c
-  include-dirs:     c-finalizer
+  c-sources:        cbits/myfree.c
+  include-dirs:     cbits
 
   if flag(force-posix-clib) || os(windows)
       build-depends: regex-posix-clib == 2.7.*

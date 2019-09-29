@@ -123,7 +123,7 @@ import qualified Control.Exception(try,IOException)
 try :: IO a -> IO (Either Control.Exception.IOException a)
 try = Control.Exception.try
 
-type CRegex = ()   -- dummy regex_t used below to read out nsub value
+data CRegex   -- pointer tag for regex_t C type
 
 -- | RegOffset is "typedef int regoff_t" on Linux and ultimately "typedef
 -- long long __int64_t" on Max OS X.  So rather than saying
@@ -163,29 +163,8 @@ type RegOffsetT = (#type regoff_t)
 --
 --  * 'compNoSub' (REG_NOSUB) which turns off all information from matching
 --    except whether a match exists.
-#ifdef __GLASGOW_HASKELL__
+
 newtype CompOption = CompOption CInt deriving (Eq,Show,Num,Bits)
-#else
-newtype CompOption = CompOption CInt deriving (Eq,Show)
-
-instance Num CompOption where
-	CompOption x + CompOption y = CompOption (x + y)
-	CompOption x - CompOption y = CompOption (x - y)
-	CompOption x * CompOption y = CompOption (x * y)
-	abs (CompOption x) = CompOption (abs x)
-	signum (CompOption x) = CompOption (signum x)
-	fromInteger n = CompOption (fromInteger n)
-
-instance Bits CompOption where
-	CompOption x .&. CompOption y = CompOption (x .&. y)
-	CompOption x .|. CompOption y = CompOption (x .|. y)
-	CompOption x `xor` CompOption y = CompOption (x `xor` y)
-	complement (CompOption x) = CompOption (complement x)
-	shift (CompOption x) n = CompOption (shift x n)
-	rotate (CompOption x) n = CompOption (rotate x n)
-	bitSize (CompOption x) = bitSize x
-	isSigned (CompOption x) = isSigned x
-#endif
 
 -- | A bitmapped 'CInt' containing options for execution of compiled
 -- regular expressions.  Option values (and their man 3 regexec names) are
@@ -198,29 +177,7 @@ instance Bits CompOption where
 --
 --  * 'execNotEOL' (REG_NOTEOL) can be set to prevent $ from matching at the
 --    end of the input (before the terminating NUL).
-#ifdef __GLASGOW_HASKELL__
 newtype ExecOption = ExecOption CInt deriving (Eq,Show,Num,Bits)
-#else
-newtype ExecOption = ExecOption CInt deriving (Eq,Show)
-
-instance Num ExecOption where
-	ExecOption x + ExecOption y = ExecOption (x + y)
-	ExecOption x - ExecOption y = ExecOption (x - y)
-	ExecOption x * ExecOption y = ExecOption (x * y)
-	abs (ExecOption x) = ExecOption (abs x)
-	signum (ExecOption x) = ExecOption (signum x)
-	fromInteger n = ExecOption (fromInteger n)
-
-instance Bits ExecOption where
-	ExecOption x .&. ExecOption y = ExecOption (x .&. y)
-	ExecOption x .|. ExecOption y = ExecOption (x .|. y)
-	ExecOption x `xor` ExecOption y = ExecOption (x `xor` y)
-	complement (ExecOption x) = ExecOption (complement x)
-	shift (ExecOption x) n = ExecOption (shift x n)
-	rotate (ExecOption x) n = ExecOption (rotate x n)
-	bitSize (ExecOption x) = bitSize x
-	isSigned (ExecOption x) = isSigned x
-#endif
 
 -- | ReturnCode is an enumerated 'CInt', corresponding to the error codes
 -- from @man 3 regex@:
@@ -327,7 +284,7 @@ type CRegMatch = () -- dummy regmatch_t used below to read out so and eo values
 foreign import ccall unsafe "memset"
   c_memset :: Ptr CRegex -> CInt -> CSize -> IO (Ptr CRegex)
 
--- c-finalizer/myfree.h and c-finalizer/myfree.c
+-- cbits/myfree.h and cbits/myfree.c
 foreign import ccall unsafe "&hs_regex_regfree"
   c_myregfree :: FunPtr (Ptr CRegex -> IO ())
 

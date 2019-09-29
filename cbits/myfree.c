@@ -1,13 +1,14 @@
+#include <regex.h>
+#include <stdlib.h>
+
 #include "myfree.h"
-#include "regex.h"
-#include "stdlib.h"
 
 /* 
 void free(void *ptr);
 void regfree(regex_t *preg);
 */
 
-void myregfree(void *preg) {
+void hs_regex_freereq(void *preg) {
   regfree(preg);
   free(preg);
 }
