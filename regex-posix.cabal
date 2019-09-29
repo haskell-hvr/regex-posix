@@ -16,18 +16,17 @@ description:
 
 extra-source-files:
   ChangeLog.md
-  cbits/engine.c
-  cbits/cclass.h
-  cbits/cname.h
-  cbits/regex2.h
-  cbits/regex.h
-  cbits/utils.h
   c-finalizer/myfree.h
   c-finalizer/myfree.c
 
 source-repository head
   type:     git
   location: https://github.com/hvr/regex-posix.git
+
+flag force-posix-clib
+  default: False
+  manual: True
+  description: Force use of <//hackage.haskell.org/package/regex-posix-clib regex-posix-clib> package.
 
 library
   hs-source-dirs: src
@@ -44,15 +43,9 @@ library
 
   c-sources:        c-finalizer/myfree.c
   include-dirs:     c-finalizer
-  if !os(windows)
-    cc-options:     -DHAVE_REGEX_H
-  else
-    c-sources:      cbits/reallocf.c
-                    cbits/regcomp.c
-                    cbits/regerror.c
-                    cbits/regexec.c
-                    cbits/regfree.c
-    include-dirs:   cbits
+
+  if flag(force-posix-clib) || os(windows)
+      build-depends: regex-posix-clib == 2.7.*
 
   default-language: Haskell2010
   default-extensions:

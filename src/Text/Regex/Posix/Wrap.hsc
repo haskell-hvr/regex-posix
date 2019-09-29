@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wall -fno-warn-unused-imports #-}
+
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  Text.Regex.Posix.Wrap
@@ -17,10 +19,6 @@
 -- The 'Regex', 'CompOption', and 'ExecOption' types and their 'RegexOptions'
 -- instance is declared.  The '=~' and '=~~' convenience functions are
 -- defined.
---
--- The exported symbols are the same whether HAVE_REGEX_H is defined, but
--- when it is not defined then @getVersion == Nothing@ and all other
--- exported values will call error or fail.
 --
 -- This module will fail or error only if allocation fails or a nullPtr
 -- is passed in.
@@ -88,38 +86,16 @@ module Text.Regex.Posix.Wrap(
   retEspace
   ) where
 
-#ifdef HAVE_REGEX_H
-#define HAVE_REGCOMP 1
-#else
-#ifdef __NHC__
-#define HAVE_REGEX_H 1
-#define HAVE_REGCOMP 1
-#endif
-#endif
-
 #include <sys/types.h>
--- string.h is needed for memset
-
-#include "myfree.h"
-         
-#include "string.h"
+#include <string.h>
 
 #ifndef _POSIX_C_SOURCE
 #define _POSIX_C_SOURCE 1
 #endif
 
-#if HAVE_REGEX_H && HAVE_REGCOMP
-#include "regex.h"
-#else
-#include "regex.h"
+#include <regex.h>
 
--- CFILES stuff is Hugs only
-{-# CFILES cbits/reallocf.c #-}
-{-# CFILES cbits/regcomp.c #-}
-{-# CFILES cbits/regerror.c #-}
-{-# CFILES cbits/regexec.c #-}
-{-# CFILES cbits/regfree.c #-}
-#endif
+#include "myfree.h"
 
 import Prelude hiding (fail)
 import Control.Monad.Fail (MonadFail)
@@ -352,34 +328,16 @@ foreign import ccall unsafe "memset"
   c_memset :: Ptr CRegex -> CInt -> CSize -> IO (Ptr CRegex)
 
 -- c-finalizer/myfree.h and c-finalizer/myfree.c
-foreign import ccall unsafe "&myregfree"
+foreign import ccall unsafe "&hs_regex_regfree"
   c_myregfree :: FunPtr (Ptr CRegex -> IO ())
-
-#if __GLASGOW_HASKELL__ || __HUGS__
-
-foreign import ccall unsafe "regcomp"
-  c_regcomp :: Ptr CRegex -> CString -> CompOption -> IO ReturnCode
-
-{- NOT USED
-foreign import ccall unsafe "&regfree"
-  c_regfree :: FunPtr (Ptr CRegex -> IO ())
--}
-
-foreign import ccall unsafe "regexec"
-  c_regexec :: Ptr CRegex -> CString -> CSize
-            -> Ptr CRegMatch -> ExecOption -> IO ReturnCode
-
-foreign import ccall unsafe "regerror"
-  c_regerror :: ReturnCode -> Ptr CRegex
-             -> CString -> CSize -> IO CSize
-
-#elif HAVE_REGEX_H && HAVE_REGCOMP
 
 foreign import ccall unsafe "regex.h regcomp"
   c_regcomp :: Ptr CRegex -> CString -> CompOption -> IO ReturnCode
 
+{- currently unused
 foreign import ccall unsafe "regex.h &regfree"
   c_regfree :: FunPtr (Ptr CRegex -> IO ())
+-}
 
 foreign import ccall unsafe "regex.h regexec"
   c_regexec :: Ptr CRegex -> CString -> CSize
@@ -388,23 +346,6 @@ foreign import ccall unsafe "regex.h regexec"
 foreign import ccall unsafe "regex.h regerror"
   c_regerror :: ReturnCode -> Ptr CRegex
              -> CString -> CSize -> IO CSize
-
-#else
-
-foreign import ccall unsafe "regex/regex.h regcomp"
-  c_regcomp :: Ptr CRegex -> CString -> CompOption -> IO ReturnCode
-
-foreign import ccall unsafe "regex/regex.h &regfree"
-  c_regfree :: FunPtr (Ptr CRegex -> IO ())
-
-foreign import ccall unsafe "regex/regex.h regexec"
-  c_regexec :: Ptr CRegex -> CString -> CSize
-            -> Ptr CRegMatch -> ExecOption -> IO ReturnCode
-
-foreign import ccall unsafe "regex/regex.h regerror"
-  c_regerror :: ReturnCode -> Ptr CRegex
-             -> CString -> CSize -> IO CSize
-#endif
 
 retOk :: ReturnCode
 retOk = ReturnCode 0
