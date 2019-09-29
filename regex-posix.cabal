@@ -30,6 +30,7 @@ source-repository head
   location: https://github.com/hvr/regex-posix.git
 
 library
+  hs-source-dirs: src
   exposed-modules:
       Text.Regex.Posix
       Text.Regex.Posix.Wrap
