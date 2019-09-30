@@ -8,7 +8,7 @@ void free(void *ptr);
 void regfree(regex_t *preg);
 */
 
-void hs_regex_freereq(void *preg) {
+void hs_regex_regfree(void *preg) {
   regfree(preg);
   free(preg);
 }
