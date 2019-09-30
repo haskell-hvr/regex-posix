@@ -4,7 +4,7 @@
 -- |
 -- Module      :  Text.Regex.Posix.Wrap
 -- Copyright   :  (c) Chris Kuklewicz 2006,2007,2008 derived from (c) The University of Glasgow 2002
--- License     :  BSD-style (see the file LICENSE)
+-- SPDX-License-Identifier: BSD-3-Clause
 --
 -- Maintainer  :  hvr@gnu.org
 -- Stability   :  experimental
