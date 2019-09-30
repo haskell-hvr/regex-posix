@@ -4,14 +4,15 @@
 -- Module      :  Text.Regex.Posix
 -- Copyright   :  (c) Chris Kuklewicz 2006
 -- SPDX-License-Identifier: BSD-3-Clause
--- 
+--
 -- Maintainer  :  hvr@gnu.org
 -- Stability   :  experimental
 -- Portability :  non-portable (regex-base needs MPTC+FD)
 --
--- Module that provides the Regex backend that wraps the c posix regex api.
--- This is the backend being used by the regex-compat package to replace
--- Text.Regex
+-- Module that provides the Regex backend that wraps the
+-- <https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/regex.h.html C POSIX.2 regex api>.
+-- This is the backend being used by the <//hackage.haskell.org/regex-compat regex-compat> package to replace
+-- "Text.Regex".
 --
 -- The "Text.Regex.Posix" module provides a backend for regular
 -- expressions. If you import this along with other backends, then
@@ -27,7 +28,7 @@
 -- This module is only efficient with 'Data.ByteString.ByteString' only
 -- if it is null terminated, i.e. @(Bytestring.last bs)==0@.  Otherwise the
 -- library must make a temporary copy of the 'Data.ByteString.ByteString'
--- and append the NUL byte.
+-- and append the @NUL@ byte.
 --
 -- A 'String' will be converted into a 'Foreign.C.CString' for processing.
 -- Doing this repeatedly will be very inefficient.
@@ -38,14 +39,15 @@
 --
 -- When offsets are reported for subexpression captures, a subexpression
 -- that did not match anything (as opposed to matching an empty string)
--- will have its offset set to the 'unusedRegOffset' value, which is (-1).
+-- will have its offset set to the 'unusedRegOffset' value, which is @(-1)@.
 --
 -- Benchmarking shows the default regex library on many platforms is very
 -- inefficient.  You might increase performace by an order of magnitude
--- by obtaining libpcre and regex-pcre or libtre and regex-tre.  If you
+-- by obtaining @libpcre@ and <//hackage.haskell.org/package/regex-pcre regex-pcre>
+-- or @libtre@ and <//hackage.haskell.org/package/regex-tre regex-tre>.  If you
 -- do not need the captured substrings then you can also get great
--- performance from regex-dfa.  If you do need the capture substrings
--- then you may be able to use regex-parsec to improve performance.
+-- performance from <//hackage.haskell.org/package/regex-dfa regex-dfa>.  If you do need the capture substrings
+-- then you may be able to use <//hackage.haskell.org/package/regex-parsec regex-parsec> to improve performance.
 -----------------------------------------------------------------------------
 
 module Text.Regex.Posix(getVersion_Text_Regex_Posix
