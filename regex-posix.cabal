@@ -9,10 +9,14 @@ copyright:              Copyright (c) 2007-2010, Christopher Kuklewicz
 author:                 Christopher Kuklewicz
 maintainer:             hvr@gnu.org
 bug-reports:            https://github.com/hvr/regex-posix
-synopsis:               Replaces/Enhances Text.Regex
+synopsis:               POSIX Backend for "Text.Regex" (regex-base)
 category:               Text
 description:
-  The POSIX regex backend for <//hackage.haskell.org/package/regex-base regex-base>
+  The POSIX regex backend for <//hackage.haskell.org/package/regex-base regex-base>.
+  .
+  The main appeal of this backend is that it's very lightweight due to its reliance on the ubiquitous <https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/regex.h.html POSIX.2 regex> facility that is provided by the standard C library on most POSIX platforms.
+  .
+  See also <https://wiki.haskell.org/Regular_expressions> for more information.
 
 extra-source-files:
   ChangeLog.md
