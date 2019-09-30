@@ -28,10 +28,9 @@ source-repository head
 
 library
   c-sources:        cbits/regex.c
-  cc-options:       -O3 -Wall
+  cc-options:       -O3
                     -U_LIBC -UDEBUG
                     -UHAVE_CONFIG_H
-                    -DUSE_REGEX_STATIC
                     -DHAVE_STDBOOL_H
                     -DHAVE_STDINT_H
   include-dirs:     cbits
