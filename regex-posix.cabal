@@ -1,6 +1,7 @@
 cabal-version:          1.12
 name:                   regex-posix
 version:                0.96.0.0
+x-revision:             2
 
 build-type:             Simple
 license:                BSD3
@@ -8,7 +9,7 @@ license-file:           LICENSE
 copyright:              Copyright (c) 2007-2010, Christopher Kuklewicz
 author:                 Christopher Kuklewicz
 maintainer:             hvr@gnu.org
-bug-reports:            https://github.com/hvr/regex-posix
+bug-reports:            https://github.com/haskell-hvr/regex-posix
 synopsis:               POSIX Backend for "Text.Regex" (regex-base)
 category:               Text
 description:
@@ -23,22 +24,31 @@ extra-source-files:
   cbits/myfree.h
 
 tested-with:
-  GHC ==7.0.2
-   || ==7.2.2
-   || ==7.4.2
-   || ==7.6.3
-   || ==7.8.4
-   || ==7.10.3
-   || ==8.0.2
-   || ==8.2.2
-   || ==8.4.4
-   || ==8.6.5
-   || ==8.8.3
-   || ==8.10.1
+  -- Haskell CI:
+  GHC == 7.0.4
+  GHC == 7.2.2
+  GHC == 7.4.2
+  GHC == 7.6.3
+  GHC == 7.8.4
+  GHC == 7.10.3
+  GHC == 8.0.2
+  GHC == 8.2.2
+  GHC == 8.4.4
+  GHC == 8.6.5
+  GHC == 8.8.4
+  GHC == 8.10.3
+  -- manually (AA, 2021-02-17):
+  GHC == 8.10.4
+  -- GHC == 9.0.1
 
 source-repository head
   type:     git
   location: https://github.com/hvr/regex-posix.git
+
+source-repository this
+  type:     git
+  location: https://github.com/haskell-hvr/regex-base.git
+  tag:      v0.96.0.0-r2
 
 flag _regex-posix-clib
   manual: False
@@ -88,5 +98,4 @@ library
   if !impl(ghc >= 8)
       build-depends: fail == 4.9.*
 
-  ghc-options: -O2
-               -Wall -fno-warn-unused-imports
+  ghc-options: -Wall -fno-warn-unused-imports
