@@ -1,14 +1,13 @@
 cabal-version:          1.12
 name:                   regex-posix
-version:                0.96.0.0
-x-revision:             2
+version:                0.96.0.1
 
 build-type:             Simple
 license:                BSD3
 license-file:           LICENSE
 copyright:              Copyright (c) 2007-2010, Christopher Kuklewicz
 author:                 Christopher Kuklewicz
-maintainer:             hvr@gnu.org
+maintainer:             andreas.abel@gu.se hvr@gnu.org
 bug-reports:            https://github.com/haskell-hvr/regex-posix
 synopsis:               POSIX Backend for "Text.Regex" (regex-base)
 category:               Text
@@ -38,17 +37,17 @@ tested-with:
   GHC == 8.8.4
   GHC == 8.10.3
   -- manually (AA, 2021-02-17):
-  GHC == 8.10.4
+  -- GHC == 8.10.4
   -- GHC == 9.0.1
 
 source-repository head
   type:     git
-  location: https://github.com/hvr/regex-posix.git
+  location: https://github.com/haskell-hvr/regex-posix.git
 
 source-repository this
   type:     git
   location: https://github.com/haskell-hvr/regex-base.git
-  tag:      v0.96.0.0-r2
+  tag:      v0.96.0.1
 
 flag _regex-posix-clib
   manual: False

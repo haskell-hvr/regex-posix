@@ -1,8 +1,10 @@
 See also http://pvp.haskell.org/faq
 
-## 0.96.0.0 Revision 2
+## 0.96.0.1
 
 - Compatibility with `base-4.15` (GHC 9.0)
+
+- Optimization flag `-O2` removed
 
 ## 0.96.0.0 Revision 1
 
