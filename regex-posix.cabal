@@ -7,8 +7,10 @@ license:                BSD3
 license-file:           LICENSE
 copyright:              Copyright (c) 2007-2010, Christopher Kuklewicz
 author:                 Christopher Kuklewicz
-maintainer:             andreas.abel@gu.se hvr@gnu.org
-bug-reports:            https://github.com/haskell-hvr/regex-posix
+maintainer:
+  Herbert Valerio Riedel <hvr@gnu.org>,
+  Andreas Abel
+bug-reports:            https://github.com/hvr/regex-posix
 synopsis:               POSIX Backend for "Text.Regex" (regex-base)
 category:               Text
 description:
@@ -42,11 +44,11 @@ tested-with:
 
 source-repository head
   type:     git
-  location: https://github.com/haskell-hvr/regex-posix.git
+  location: https://github.com/hvr/regex-posix.git
 
 source-repository this
   type:     git
-  location: https://github.com/haskell-hvr/regex-base.git
+  location: https://github.com/hvr/regex-base.git
   tag:      v0.96.0.1
 
 flag _regex-posix-clib
