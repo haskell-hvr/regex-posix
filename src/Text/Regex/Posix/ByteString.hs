@@ -4,9 +4,9 @@
 -- Module      :  Text.Regex.Posix.ByteString
 -- Copyright   :  (c) Chris Kuklewicz 2006
 -- SPDX-License-Identifier: BSD-3-Clause
--- 
--- Maintainer  :  hvr@gnu.org
--- Stability   :  experimental
+--
+-- Maintainer  :  hvr@gnu.org, Andreas Abel
+-- Stability   :  stable
 -- Portability :  non-portable (regex-base needs MPTC+FD)
 --
 -- This provides 'ByteString' instances for RegexMaker and RegexLike

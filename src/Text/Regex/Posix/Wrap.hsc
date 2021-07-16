@@ -6,8 +6,8 @@
 -- Copyright   :  (c) Chris Kuklewicz 2006,2007,2008 derived from (c) The University of Glasgow 2002
 -- SPDX-License-Identifier: BSD-3-Clause
 --
--- Maintainer  :  hvr@gnu.org
--- Stability   :  experimental
+-- Maintainer  :  hvr@gnu.org, Andreas Abel
+-- Stability   :  stable
 -- Portability :  non-portable (regex-base needs MPTC+FD)
 --
 -- WrapPosix.hsc exports a wrapped version of the ffi imports.  To
