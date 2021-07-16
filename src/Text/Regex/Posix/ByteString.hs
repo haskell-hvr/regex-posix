@@ -81,7 +81,7 @@ instance RegexMaker Regex CompOption ExecOption ByteString where
 instance RegexLike Regex ByteString where
   matchTest regex bs = unsafePerformIO $
     asCString bs (wrapTest regex) >>=  unwrap
-  matchOnce regex bs = unsafePerformIO $ 
+  matchOnce regex bs = unsafePerformIO $
     execute regex bs >>= unwrap
   matchAll regex bs = unsafePerformIO $
     asCString bs (wrapMatchAll regex) >>= unwrap
@@ -115,7 +115,7 @@ execute regex bs = do
   case maybeStartEnd of
     Right Nothing -> return (Right Nothing)
 --  Right (Just []) -> ...
-    Right (Just parts) -> 
+    Right (Just parts) ->
       return . Right . Just . listArray (0,pred (length parts))
       . map (\(s,e)->(fromIntegral s, fromIntegral (e-s))) $ parts
     Left err -> return (Left err)
@@ -127,7 +127,7 @@ regexec regex bs = do
   let getSub (start,stop) | start == unusedRegOffset = B.empty
                           | otherwise = B.take (fi (stop-start)) . B.drop (fi start) $ bs
       matchedParts [] = (B.empty,B.empty,bs,[]) -- no information
-      matchedParts (matchedStartStop@(start,stop):subStartStop) = 
+      matchedParts (matchedStartStop@(start,stop):subStartStop) =
         (B.take (fi start) bs
         ,getSub matchedStartStop
         ,B.drop (fi stop) bs

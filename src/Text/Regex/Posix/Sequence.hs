@@ -77,15 +77,15 @@ unwrap x = case x of Left err -> fail ("Text.Regex.Posix.Sequence died: "++ show
 instance RegexMaker Regex CompOption ExecOption (Seq Char) where
   makeRegexOpts c e pattern = unsafePerformIO $
     (compile c e pattern >>= unwrap)
-  makeRegexOptsM c e pattern = either (fail.show) return $ unsafePerformIO $ 
+  makeRegexOptsM c e pattern = either (fail.show) return $ unsafePerformIO $
     (compile c e pattern)
 
 instance RegexLike Regex (Seq Char) where
   matchTest regex str = unsafePerformIO $ do
     withSeq str (wrapTest regex) >>= unwrap
-  matchOnce regex str = unsafePerformIO $ 
+  matchOnce regex str = unsafePerformIO $
     execute regex str >>= unwrap
-  matchAll regex str = unsafePerformIO $ 
+  matchAll regex str = unsafePerformIO $
     withSeq str (wrapMatchAll regex) >>= unwrap
   matchCount regex str = unsafePerformIO $
     withSeq str (wrapCount regex) >>= unwrap
@@ -116,7 +116,7 @@ execute regex str = do
     Right Nothing -> return (Right Nothing)
 --  Right (Just []) ->  fail "got [] back!" -- return wierd array instead
     Right (Just parts) ->
-      return . Right . Just . listArray (0,pred (length parts)) 
+      return . Right . Just . listArray (0,pred (length parts))
        . map (\(s,e)->(fromIntegral s, fromIntegral (e-s)))
        $ parts
     Left err -> return (Left err)
@@ -144,7 +144,7 @@ regexec regex str = do
         extract (fromEnum start,fromEnum $ stop-start) $ str
       matchedParts :: [(RegOffset,RegOffset)] -> ((Seq Char), (Seq Char), (Seq Char), [(Seq Char)])
       matchedParts [] = (str,S.empty,S.empty,[]) -- no information
-      matchedParts (matchedStartStop@(start,stop):subStartStop) = 
+      matchedParts (matchedStartStop@(start,stop):subStartStop) =
         (before (fromEnum start) str
         ,getSub matchedStartStop
         ,after (fromEnum stop) str
