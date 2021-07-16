@@ -93,7 +93,7 @@ instance RegexMaker Regex CompOption ExecOption L.ByteString where
 instance RegexLike Regex L.ByteString where
   matchTest regex bs = unsafePerformIO $
     asCString bs (wrapTest regex) >>=  unwrap
-  matchOnce regex bs = unsafePerformIO $ 
+  matchOnce regex bs = unsafePerformIO $
     execute regex bs >>= unwrap
   matchAll regex bs = unsafePerformIO $
     asCString bs (wrapMatchAll regex) >>= unwrap

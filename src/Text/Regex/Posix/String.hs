@@ -73,15 +73,15 @@ unwrap x = case x of Left err -> fail ("Text.Regex.Posix.String died: "++ show e
 instance RegexMaker Regex CompOption ExecOption String where
   makeRegexOpts c e pattern = unsafePerformIO $
     (compile c e pattern >>= unwrap)
-  makeRegexOptsM c e pattern = either (fail.show) return $ unsafePerformIO $ 
+  makeRegexOptsM c e pattern = either (fail.show) return $ unsafePerformIO $
     (compile c e pattern)
 
 instance RegexLike Regex String where
   matchTest regex str = unsafePerformIO $ do
     withCAString str (wrapTest regex) >>= unwrap
-  matchOnce regex str = unsafePerformIO $ 
+  matchOnce regex str = unsafePerformIO $
     execute regex str >>= unwrap
-  matchAll regex str = unsafePerformIO $ 
+  matchAll regex str = unsafePerformIO $
     withCAString str (wrapMatchAll regex) >>= unwrap
   matchCount regex str = unsafePerformIO $
     withCAString str (wrapCount regex) >>= unwrap
@@ -112,7 +112,7 @@ execute regex str = do
     Right Nothing -> return (Right Nothing)
 --  Right (Just []) ->  fail "got [] back!" -- return wierd array instead
     Right (Just parts) ->
-      return . Right . Just . listArray (0,pred (length parts)) 
+      return . Right . Just . listArray (0,pred (length parts))
        . map (\(s,e)->(fromIntegral s, fromIntegral (e-s)))
        $ parts
     Left err -> return (Left err)
@@ -135,10 +135,10 @@ regexec :: Regex      -- ^ Compiled regular expression
                 -- @
 regexec regex str = do
   let getSub (start,stop) | start == unusedRegOffset = ""
-                          | otherwise = 
+                          | otherwise =
         genericTake (stop-start) . genericDrop start $ str
       matchedParts [] = (str,"","",[]) -- no information
-      matchedParts (matchedStartStop@(start,stop):subStartStop) = 
+      matchedParts (matchedStartStop@(start,stop):subStartStop) =
         (genericTake start str
         ,getSub matchedStartStop
         ,genericDrop stop str
