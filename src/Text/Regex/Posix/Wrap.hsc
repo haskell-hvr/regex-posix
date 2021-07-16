@@ -23,11 +23,11 @@
 -- This module will fail or error only if allocation fails or a nullPtr
 -- is passed in.
 --
--- 2009-January : wrapMatchAll and wrapCount now adjust the execution
--- option execNotBOL after the first result to take into account '\n'
+-- 2009-January : 'wrapMatchAll' and 'wrapCount' now adjust the execution
+-- option 'execNotBOL' after the first result to take into account '\n'
 -- in the text immediately before the next matches. (version 0.93.3)
 --
--- 2009-January : wrapMatchAll and wrapCount have been changed to
+-- 2009-January : 'wrapMatchAll' and 'wrapCount' have been changed to
 -- return all non-overlapping matches, including empty matches even if
 -- they coincide with the end of the previous non-empty match.  The
 -- change is that the first non-empty match no longer terminates the
@@ -125,17 +125,17 @@ try = Control.Exception.try
 
 data CRegex   -- pointer tag for regex_t C type
 
--- | RegOffset is "typedef int regoff_t" on Linux and ultimately "typedef
--- long long __int64_t" on Max OS X.  So rather than saying
+-- | 'RegOffset' is @typedef int regoff_t@ on Linux and ultimately @typedef
+-- long long __int64_t@ on Max OS X.  So rather than saying
 -- 2,147,483,647 is all the length you need, I'll take the larger:
 -- 9,223,372,036,854,775,807 should be enough bytes for anyone, no
 -- need for Integer. The alternative is to compile to different sizes
--- in a platform dependent manner with "type RegOffset = (#type
--- regoff_t)", which I do not want to do.
+-- in a platform dependent manner with @type RegOffset = (#type
+-- regoff_t)@, which I do not want to do.
 --
--- There is also a special value 'unusedRegOffset' :: 'RegOffset' which is
+-- There is also a special value @'unusedRegOffset' :: 'RegOffset'@ which is
 -- (-1) and as a starting index means that the subgroup capture was
--- unused.  Otherwise the RegOffset indicates a character boundary that
+-- unused.  Otherwise the 'RegOffset' indicates a character boundary that
 -- is before the character at that index offset, with the first
 -- character at index offset 0. So starting at 1 and ending at 2 means
 -- to take only the second character.
@@ -170,7 +170,7 @@ newtype CompOption = CompOption CInt deriving (Eq,Show,Num,Bits)
 -- regular expressions.  Option values (and their man 3 regexec names) are
 --
 --  * 'execBlank' which is a complete zero value for all the flags.  This is
---    the blankExecOpt value.
+--    the @blankExecOpt@ value.
 --
 --  * 'execNotBOL' (REG_NOTBOL) can be set to prevent ^ from matching at the
 --    start of the input.
@@ -226,7 +226,7 @@ execBlank = ExecOption 0
 unusedRegOffset :: RegOffset
 unusedRegOffset = (-1)
 
--- | The return code will be retOk when it is the Haskell wrapper and
+-- | The return code will be @retOk@ when it is the Haskell wrapper and
 -- not the underlying library generating the error message.
 type WrapError = (ReturnCode,String)
 
@@ -238,13 +238,13 @@ wrapCompile :: CompOption -- ^ Flags (bitmapped)
 wrapTest :: Regex -> CString
          -> IO (Either WrapError Bool)
 
--- | wrapMatch returns offsets for the begin and end of each capture.
--- Unused captures have offsets of unusedRegOffset which is (-1)
+-- | 'wrapMatch' returns offsets for the begin and end of each capture.
+-- Unused captures have offsets of 'unusedRegOffset' which is (-1).
 wrapMatch :: Regex -> CString
           -> IO (Either WrapError (Maybe [(RegOffset,RegOffset)]))
 
--- | wrapMatchAll returns the offset and length of each capture.
--- Unused captures have an offset of unusedRegOffset which is (-1) and
+-- | 'wrapMatchAll' returns the offset and length of each capture.
+-- Unused captures have an offset of 'unusedRegOffset' which is (-1) and
 -- length of 0.
 wrapMatchAll :: Regex -> CString
              -> IO (Either WrapError [MatchArray])
