@@ -93,7 +93,7 @@ instance RegexLike Regex (Seq Char) where
 -- compile
 compile  :: CompOption -- ^ Flags (summed together)
          -> ExecOption -- ^ Flags (summed together)
-         -> (Seq Char)     -- ^ The regular expression to compile (ASCII only, no null bytes)
+         -> Seq Char   -- ^ The regular expression to compile (ASCII only, no null bytes)
          -> IO (Either WrapError Regex) -- ^ Returns: the compiled regular expression
 compile flags e pattern =  withSeq pattern (wrapCompile flags e)
 
@@ -102,7 +102,7 @@ compile flags e pattern =  withSeq pattern (wrapCompile flags e)
 
 -- | Matches a regular expression against a string
 execute :: Regex      -- ^ Compiled regular expression
-        -> (Seq Char)     -- ^ (Seq Char) to match against
+        -> Seq Char   -- ^ Text to match against
         -> IO (Either WrapError (Maybe (Array Int (MatchOffset,MatchLength))))
                 -- ^ Returns: 'Nothing' if the regex did not match the
                 -- string, or:
@@ -126,8 +126,8 @@ execute regex str = do
 
 -- | Matches a regular expression against a string
 regexec :: Regex      -- ^ Compiled regular expression
-        -> (Seq Char)     -- ^ (Seq Char) to match against
-        -> IO (Either WrapError (Maybe ((Seq Char), (Seq Char), (Seq Char), [(Seq Char)])))
+        -> Seq Char   -- ^ Text to match against
+        -> IO (Either WrapError (Maybe (Seq Char, Seq Char, Seq Char, [Seq Char])))
                 -- ^ Returns: 'Nothing' if the regex did not match the
                 -- string, or:
                 --
@@ -138,11 +138,11 @@ regexec :: Regex      -- ^ Compiled regular expression
                 --         subexpression matches)
                 -- @
 regexec regex str = do
-  let getSub :: (RegOffset,RegOffset) -> (Seq Char)
+  let getSub :: (RegOffset,RegOffset) -> Seq Char
       getSub (start,stop) | start == unusedRegOffset = S.empty
-                          | otherwise = 
+                          | otherwise =
         extract (fromEnum start,fromEnum $ stop-start) $ str
-      matchedParts :: [(RegOffset,RegOffset)] -> ((Seq Char), (Seq Char), (Seq Char), [(Seq Char)])
+      matchedParts :: [(RegOffset,RegOffset)] -> (Seq Char, Seq Char, Seq Char, [Seq Char])
       matchedParts [] = (str,S.empty,S.empty,[]) -- no information
       matchedParts (matchedStartStop@(start,stop):subStartStop) =
         (before (fromEnum start) str
