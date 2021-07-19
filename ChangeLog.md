@@ -1,8 +1,8 @@
 For versioning policy, see: http://pvp.haskell.org/faq
 
-## 0.96.0.1
+## 0.96.0.1 (2021-07-19)
 
-- Compatibility with `base-4.15` (GHC 9.2)
+- Compatibility with `base-4.16` (GHC 9.2)
 - Fix stack installation problems on Windows around flag `_regex-posix-clib`
   (issues
   [#4](https://github.com/haskell-hvr/regex-posix/issues/4) and
