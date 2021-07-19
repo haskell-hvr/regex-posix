@@ -3,7 +3,7 @@
 -- |
 -- Module      :  Text.Regex.Posix.ByteString
 -- Copyright   :  (c) Chris Kuklewicz 2006
--- SPDX-License-Identifier: BSD-3-Clause
+-- License     :  BSD-3-Clause
 --
 -- Maintainer  :  hvr@gnu.org, Andreas Abel
 -- Stability   :  stable
