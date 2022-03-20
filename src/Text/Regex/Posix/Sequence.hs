@@ -114,7 +114,7 @@ execute regex str = do
   maybeStartEnd <- withSeq str (wrapMatch regex)
   case maybeStartEnd of
     Right Nothing -> return (Right Nothing)
---  Right (Just []) ->  fail "got [] back!" -- return wierd array instead
+--  Right (Just []) ->  fail "got [] back!" -- return weird array instead
     Right (Just parts) ->
       return . Right . Just . listArray (0,pred (length parts))
        . map (\(s,e)->(fromIntegral s, fromIntegral (e-s)))
