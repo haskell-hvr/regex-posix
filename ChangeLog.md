@@ -1,5 +1,9 @@
 For versioning policy, see: http://pvp.haskell.org/faq
 
+## 0.96.0.1 Revision 1 (2022-05-25)
+
+- Allow `base >= 4.17` (GHC 9.4)
+
 ## 0.96.0.1 (2021-07-19)
 
 - Compatibility with `base-4.16` (GHC 9.2)
