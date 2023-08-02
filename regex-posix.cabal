@@ -43,11 +43,11 @@ tested-with:
 
 source-repository head
   type:     git
-  location: https://github.com/hvr/regex-posix.git
+  location: https://github.com/haskell-hvr/regex-posix.git
 
 source-repository this
   type:     git
-  location: https://github.com/hvr/regex-base.git
+  location: https://github.com/haskell-hvr/regex-base.git
   tag:      v0.96.0.1-r2
 
 flag _regex-posix-clib
