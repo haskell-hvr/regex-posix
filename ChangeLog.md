@@ -1,5 +1,13 @@
 For versioning policy, see: http://pvp.haskell.org/faq
 
+## 0.96.0.1 Revision 3 (2023-09-28)
+
+- Allow `containers-0.7`
+
+## 0.96.0.1 Revision 2 (2023-07-07)
+
+- Allow `bytestring-0.12`
+
 ## 0.96.0.1 Revision 1 (2022-05-25)
 
 - Allow `base >= 4.17` (GHC 9.4)
