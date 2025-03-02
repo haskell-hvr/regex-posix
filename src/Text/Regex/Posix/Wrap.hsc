@@ -1,4 +1,5 @@
-{-# OPTIONS_GHC -Wall -fno-warn-unused-imports #-}
+{-# LANGUAGE CPP #-}
+{-# OPTIONS_GHC -Wno-unused-imports #-}
 
 -----------------------------------------------------------------------------
 -- |
@@ -6,7 +7,7 @@
 -- Copyright   :  (c) Chris Kuklewicz 2006,2007,2008 derived from (c) The University of Glasgow 2002
 -- Identifier  :  BSD-3-Clause
 --
--- Maintainer  :  hvr@gnu.org, Andreas Abel
+-- Maintainer  :  Andreas Abel
 -- Stability   :  stable
 -- Portability :  non-portable (regex-base needs MPTC+FD)
 --
@@ -97,7 +98,18 @@ module Text.Regex.Posix.Wrap(
 
 #include "myfree.h"
 
-import Prelude hiding (fail)
+import Prelude
+  ( Bool(True, False), otherwise
+  , Either(Left, Right)
+  , Eq, (==), (/=), (>=)
+  , IO, return, mapM
+  , Int, Num, (+), (*), (-), fromIntegral, pred, succ, toEnum
+  , Maybe(Nothing, Just)
+  , Show(show)
+  , String
+  , ($), (.), seq, undefined
+  , (++), iterate, length, map, take
+  )
 import Control.Monad.Fail (MonadFail)
 
 import Control.Monad(liftM)
@@ -106,15 +118,11 @@ import Data.Bits(Bits(..))
 import Data.Int(Int32,Int64)   -- need whatever RegeOffset or #regoff_t type will be
 import Data.Word(Word32,Word64) -- need whatever RegeOffset or #regoff_t type will be
 import Foreign(Ptr, FunPtr, nullPtr, newForeignPtr,
-               addForeignPtrFinalizer, Storable(peekByteOff), allocaArray,
+               Storable(peekByteOff), allocaArray,
                allocaBytes, withForeignPtr,ForeignPtr,plusPtr,peekElemOff)
 import Foreign.Marshal.Alloc(mallocBytes)
 import Foreign.C(CChar)
-#if __GLASGOW_HASKELL__ >= 703
 import Foreign.C(CSize(CSize),CInt(CInt))
-#else
-import Foreign.C(CSize,CInt)
-#endif
 import Foreign.C.String(peekCAString, CString)
 import Text.Regex.Base.RegexLike(RegexOptions(..),RegexMaker(..),RegexContext(..),MatchArray)
 -- deprecated: import qualified System.IO.Error as IOERROR(try)

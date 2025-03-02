@@ -5,7 +5,7 @@
 -- Copyright   :  (c) Chris Kuklewicz 2006
 -- License     :  BSD-3-Clause
 --
--- Maintainer  :  hvr@gnu.org, Andreas Abel
+-- Maintainer  :  Andreas Abel
 -- Stability   :  stable
 -- Portability :  non-portable (regex-base needs MPTC+FD)
 --
@@ -55,8 +55,7 @@ module Text.Regex.Posix(getVersion_Text_Regex_Posix
   -- ** Wrap, for '=~' and '=~~', types and constants
  ,module Text.Regex.Posix.Wrap) where
 
-import Prelude hiding (fail)
-import Control.Monad.Fail (MonadFail)
+import Prelude ()
 
 import Text.Regex.Posix.Wrap(Regex, CompOption(CompOption),
   ExecOption(ExecOption), (=~), (=~~),
@@ -67,7 +66,7 @@ import Text.Regex.Posix.String()
 import Text.Regex.Posix.Sequence()
 import Text.Regex.Posix.ByteString()
 import Text.Regex.Posix.ByteString.Lazy()
-import Data.Version(Version(..))
+import Data.Version(Version)
 import Text.Regex.Base
 import qualified Paths_regex_posix
 

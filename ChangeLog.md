@@ -1,4 +1,9 @@
-For versioning policy, see: http://pvp.haskell.org/faq
+## 0.96.0.2 (2025-03-02)
+
+- Drop support for GHC 7
+- Make `Prelude` imports explicit, add `LANGUAGE NoImplicitPrelude`
+- Make upper bounds of dependencies major-major (all are shipped with GHC)
+- Tested with GHC 8.0 - 9.12.1
 
 ## 0.96.0.1 Revision 3 (2023-09-28)
 

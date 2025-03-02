@@ -1,11 +1,10 @@
-{-# OPTIONS_GHC -fno-warn-orphans #-}
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  Text.Regex.Posix.String
 -- Copyright   :  (c) Chris Kuklewicz 2006
 -- License     :  BSD-3-Clause
 --
--- Maintainer  :  hvr@gnu.org, Andreas Abel
+-- Maintainer  :  Andreas Abel
 -- Stability   :  stable
 -- Portability :  non-portable (regex-base needs MPTC+FD)
 --
@@ -48,7 +47,18 @@ module Text.Regex.Posix.String(
   execNotEOL     -- not at end of line
   ) where
 
-import Prelude hiding (fail)
+import Prelude
+  ( Int, String, IO
+  , Either(Left, Right), either
+  , Maybe(Nothing, Just)
+  , Show(show)
+  , fromIntegral, pred
+  , (.), ($), (==), otherwise
+  , (++), (-)
+  , (>>=), return
+  , length, map
+  )
+
 import Control.Monad.Fail (MonadFail(fail))
 
 import Data.Array(listArray, Array)

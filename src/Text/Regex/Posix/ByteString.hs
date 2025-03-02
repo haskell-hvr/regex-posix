@@ -1,11 +1,10 @@
-{-# OPTIONS_GHC -fno-warn-orphans #-}
 -----------------------------------------------------------------------------
 -- |
 -- Module      :  Text.Regex.Posix.ByteString
 -- Copyright   :  (c) Chris Kuklewicz 2006
 -- License     :  BSD-3-Clause
 --
--- Maintainer  :  hvr@gnu.org, Andreas Abel
+-- Maintainer  :  Andreas Abel
 -- Stability   :  stable
 -- Portability :  non-portable (regex-base needs MPTC+FD)
 --
@@ -51,7 +50,15 @@ module Text.Regex.Posix.ByteString(
   execNotEOL       -- not at end of line
   ) where
 
-import Prelude hiding (fail)
+import Prelude
+  ( Int, Integral, Num, (-), fromIntegral, pred
+  , Either(Left, Right), either
+  , Show(show)
+  , IO, (>>=), return
+  , Maybe(Nothing, Just)
+  , ($), (.), (==), (&&), otherwise, not
+  , (++), length, map
+  )
 import Control.Monad.Fail (MonadFail(fail))
 
 import Data.Array(Array,listArray)

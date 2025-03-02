@@ -2,3 +2,7 @@
 /dist-newstyle/
 /cabal.project.local
 /.ghc.environment.*
+/.stack-work/
+/stack*.yaml.lock
+*~
+
